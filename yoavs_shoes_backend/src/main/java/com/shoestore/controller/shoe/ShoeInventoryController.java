@@ -1,9 +1,11 @@
 package com.shoestore.controller.shoe;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.shoestore.controller.base.CrudController;
 import com.shoestore.dto.base.PageResponse;
 import com.shoestore.dto.shoe.ShoeInventoryDto;
 import com.shoestore.dto.shoe.ShoeInventoryMapper;
+import com.shoestore.dto.view.Views;
 import com.shoestore.entity.shoe.ShoeInventory;
 import com.shoestore.security.annotation.AccessControl;
 import com.shoestore.service.shoe.ShoeInventoryService;
@@ -224,6 +226,34 @@ public class ShoeInventoryController extends CrudController<
             @Valid @RequestBody ShoeInventoryDto.UpdateShoeInventoryDto request) {
         
         return super.update(inventoryId, request);
+    }
+
+    /**
+     * Update inventory entry by shoe model and size (admin only)
+     */
+    @AccessControl(level = AccessControl.AccessLevel.ADMIN_ONLY)
+    @Operation(
+        summary = "Update inventory by shoe model and size (Admin only)",
+        description = "Update quantities for an inventory entry identified by shoe model ID and size"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Inventory updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid inventory data or duplicate entry"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - admin access required"),
+        @ApiResponse(responseCode = "404", description = "Shoe model or inventory not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PutMapping("/model/{shoeModelId}/size/{size}")
+    @JsonView(Views.Detailed.class)
+    public ResponseEntity<StandardResponse<ShoeInventoryDto>> updateByShoeModelAndSize(
+            @Parameter(description = "Shoe model ID") @PathVariable Long shoeModelId,
+            @Parameter(description = "Shoe size") @PathVariable String size,
+            @Valid @RequestBody ShoeInventoryDto.UpdateShoeInventoryDto request) {
+
+        ShoeInventoryDto updatedInventory = convertToDto(service.updateByShoeModelAndSize(shoeModelId, size, request));
+
+        return success(updatedInventory);
     }
 
     @Override

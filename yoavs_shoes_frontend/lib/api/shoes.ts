@@ -1,5 +1,5 @@
 import api from './client';
-import { PageResponse, Shoe, ShoeFilters, ShoeInventoryView, ShoesStats, StandardResponse } from '@types';
+import { PageResponse, Shoe, ShoeFilters, ShoeInventoryView, ShoeModel, ShoesStats, StandardResponse } from '@types';
 
 // Shoes API functions
 export const shoesApi = {
@@ -42,4 +42,9 @@ export const shoesApi = {
     const response = await api.get<StandardResponse<ShoesStats>>('/shoes/stats');
     return response.data.data;
   },
+
+  getShoeModels: async (shoeId: number) => {
+    const response = await api.get<StandardResponse<ShoeModel[]>>(`/products/shoe/${shoeId}`);
+    return response.data.data;
+  }
 };

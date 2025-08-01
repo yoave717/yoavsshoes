@@ -46,6 +46,10 @@ export interface Shoe extends BaseType{
   category: Category;
 }
 
+export interface ShoeModelInventoryView extends ShoeModel {
+  totalStock: number;
+}
+
 export interface ShoeInventoryView extends Shoe {
    totalStock: number;
    modelCount: number;

@@ -5,6 +5,7 @@ import com.shoestore.entity.shoe.Brand;
 import com.shoestore.entity.shoe.ShoeCategory;
 import com.shoestore.repository.base.BaseRepository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,4 +36,10 @@ public interface ShoeModelRepository extends BaseRepository<ShoeModel, Long>, Jp
      */
     @Query("SELECT COUNT(sm) FROM ShoeModel sm WHERE sm.shoe.category = :category AND sm.isActive = true")
     long countByShoe_CategoryAndIsActiveTrue(@Param("category") ShoeCategory category);
+
+    /**
+     * Find all models by shoe ID
+     */
+    @EntityGraph(attributePaths = {"availableSizes"})
+    List<ShoeModel> findByShoeId(Long shoeId);
 }

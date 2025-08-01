@@ -1,6 +1,7 @@
 'use client';
 
 import InventoryShoeRow from '@/components/admin/inventory/InventoryShoeRow';
+import { useUpdateShoeInventory } from '@/lib/hooks/shoes/useShoes';
 import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters } from '@types';
 
 interface InventoryTableProps {
@@ -24,6 +25,11 @@ export default function InventoryTable({
   onAddSize,
   onAddModel
 }: InventoryTableProps) {
+    const { mutate: updateInventory } = useUpdateShoeInventory();
+
+    const handleStockUpdate = (shoeId: number, modelId: number, size: string, newQuantity: number) => {
+        updateInventory({ shoeId, modelId, size, quantityAvailable: newQuantity });
+    };
   return (
     <div className="bg-white shadow rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
@@ -56,7 +62,7 @@ export default function InventoryTable({
               <InventoryShoeRow
                 key={shoe.id}
                 shoe={shoe}
-                onStockUpdate={() => {}} // TODO: Implement with mutations
+                onStockUpdate={(modelId, size, newQuantity) => handleStockUpdate(shoe.id, modelId, size, newQuantity)}
                 onRemoveSize={() => {}} // TODO: Implement with mutations
                 onEditModel={onEditModel}
                 onDeleteModel={() => {}} // TODO: Implement with mutations

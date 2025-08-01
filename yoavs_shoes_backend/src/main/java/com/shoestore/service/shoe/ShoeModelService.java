@@ -2,6 +2,7 @@ package com.shoestore.service.shoe;
 
 import com.shoestore.dto.shoe.*;
 import com.shoestore.entity.shoe.*;
+import com.shoestore.exception.ResourceNotFoundException;
 import com.shoestore.repository.shoe.*;
 import com.shoestore.service.base.BaseService;
 
@@ -66,7 +67,18 @@ public class ShoeModelService extends BaseService<ShoeModel, Long, ShoeModelRepo
         return shoeModelRepository.findAll(spec, pageable);
     }
 
-    
+    /**
+     * Get models by shoe ID
+     */
+    public List<ShoeModel> getShoeModels(Long shoeId) {
+        log.debug("Getting shoe models for shoe ID: {}", shoeId);
+        List<ShoeModel> models = shoeModelRepository.findByShoeId(shoeId);
+        if (models.isEmpty()) {
+            throw new ResourceNotFoundException("No models found for shoe ID: " + shoeId);
+        }
+
+        return models;
+    }
 
     /**
      * Create Pageable for pagination and sorting

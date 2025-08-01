@@ -1,5 +1,6 @@
 package com.shoestore.service.shoe;
 
+import com.shoestore.dto.shoe.ShoeInventoryDto.UpdateShoeInventoryDto;
 import com.shoestore.entity.shoe.ShoeInventory;
 import com.shoestore.entity.shoe.ShoeModel;
 import com.shoestore.exception.ResourceNotFoundException;
@@ -17,7 +18,7 @@ import java.util.Optional;
  */
 @Service
 @Slf4j
-@Transactional(readOnly = true)
+@Transactional
 public class ShoeInventoryService extends BaseService<ShoeInventory, Long, ShoeInventoryRepository> {
 
     private final ShoeModelService shoeModelService;
@@ -31,6 +32,19 @@ public class ShoeInventoryService extends BaseService<ShoeInventory, Long, ShoeI
     protected void updateEntityFields(ShoeInventory existingEntity, ShoeInventory newEntity) {
         existingEntity.setQuantityAvailable(newEntity.getQuantityAvailable());
         existingEntity.setQuantityReserved(newEntity.getQuantityReserved());
+    }
+
+
+    public ShoeInventory updateByShoeModelAndSize(Long shoeModelId, String size, UpdateShoeInventoryDto request) {
+        log.debug("Updating inventory for shoe model {} and size {} with request {}", shoeModelId, size, request.getQuantityAvailable());
+
+        ShoeInventory inventory = getInventoryByShoeModelAndSize(shoeModelId, size);
+        inventory.setQuantityAvailable(request.getQuantityAvailable());
+        if (request.getQuantityReserved() != null) {
+            inventory.setQuantityReserved(request.getQuantityReserved());
+        }
+
+        return repository.save(inventory);
     }
 
     /**

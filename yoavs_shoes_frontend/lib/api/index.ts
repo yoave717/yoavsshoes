@@ -7,6 +7,7 @@ export * from './address';
 export * from './orders';
 export * from './brands';
 export * from './categories'
+export * from './shoeInventory'
 
 // Export the API client
 export { default as apiClient } from './client';

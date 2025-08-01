@@ -193,6 +193,28 @@ public class ProductController extends CrudController<
         return success(response, "Search completed successfully");
     }
 
+    /*
+     * Get models for a specific shoe
+     */
+    @GetMapping("/shoe/{shoeId}")
+    @Operation(
+        summary = "Get shoe models",
+        description = "Retrieve all models for a specific shoe by its ID"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Shoe models retrieved successfully"),
+        @ApiResponse(responseCode = "404", description = "Shoe not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @JsonView(Views.Detailed.class)
+    public ResponseEntity<StandardResponse<List<ShoeModelDto>>> getShoeModels(@PathVariable Long shoeId) {
+        log.debug("Getting models for shoe ID: {}", shoeId);
+        List<ShoeModel> models = service.getShoeModels(shoeId);
+        List<ShoeModelDto> modelDtos = models.stream()
+                .map(this::convertToDto).toList();
+        return success(modelDtos, "Shoe models retrieved successfully");
+    }
+
     @Override
     protected String[] getAllowedSortFields() {
         return new String[]{"createdAt", "name", "price"};
