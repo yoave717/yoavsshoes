@@ -32,3 +32,19 @@ export interface PageData<T> {
   empty: boolean;
   numberOfElements: number;
 }
+
+export interface PageFilter {
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDirection?: 'asc' | 'desc';
+}
+
+export interface BaseType {
+  id: number;
+  updatedAt?: string;
+  createdAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+
+}

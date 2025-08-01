@@ -1,6 +1,7 @@
 package com.shoestore.dto.shoe;
 
 import com.shoestore.dto.base.BaseCrudMapper;
+import com.shoestore.dto.shoe.ShoeDto.ShoeInventoryViewDto;
 import com.shoestore.entity.shoe.Shoe;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class ShoeMapper implements BaseCrudMapper<Shoe, ShoeDto,
                 .id(entity.getId())
                 .name(entity.getName())
                 .basePrice(entity.getBasePrice())
-                .gender(entity.getGender() != null ? entity.getGender().name() : null)
+                .gender(entity.getGender())
                 .brand(brandMapper.toSimpleDto(entity.getBrand()))
                 .category(categoryMapper.toSimpleDto(entity.getCategory()))
                 .build();
@@ -57,7 +58,7 @@ public class ShoeMapper implements BaseCrudMapper<Shoe, ShoeDto,
         Shoe entity = Shoe.builder()
                 .name(dto.getName())
                 .basePrice(dto.getBasePrice())
-                .gender(dto.getGender() != null ? Shoe.Gender.valueOf(dto.getGender()) : null)
+                .gender(dto.getGender())
                 .build();
 
         // Map base DTO fields to entity
@@ -76,7 +77,7 @@ public class ShoeMapper implements BaseCrudMapper<Shoe, ShoeDto,
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .basePrice(dto.getBasePrice())
-                .gender(dto.getGender() != null ? Shoe.Gender.valueOf(dto.getGender()) : null)
+                .gender(dto.getGender())
                 .isActive(dto.getIsActive() != null ? dto.getIsActive() : true)
                 // Note: Brand and Category entities will be set in service layer using brandId and categoryId
                 .build();
@@ -87,14 +88,38 @@ public class ShoeMapper implements BaseCrudMapper<Shoe, ShoeDto,
         if (dto == null) {
             return null;
         }
-
+        
         return Shoe.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .basePrice(dto.getBasePrice())
-                .gender(dto.getGender() != null ? Shoe.Gender.valueOf(dto.getGender()) : null)
+                .gender(dto.getGender())
                 .isActive(dto.getIsActive())
                 // Note: Brand and Category entities will be set in service layer using brandId and categoryId
                 .build();
+    }
+
+    public ShoeInventoryViewDto toInventoryViewDto(Shoe shoe, Long modelCount, Long totalStock) {
+        if (shoe == null) {
+            return null;
+        }
+
+        ShoeDto shoeDto =  toDto(shoe);
+
+        ShoeInventoryViewDto shoeInventoryViewDto = ShoeInventoryViewDto.builder()
+                .id(shoeDto.getId())
+                .name(shoeDto.getName())
+                .basePrice(shoeDto.getBasePrice())
+                .gender(shoeDto.getGender())
+                .brand(shoeDto.getBrand())
+                .category(shoeDto.getCategory())
+                .modelCount(modelCount)
+                .totalStock(totalStock)
+                .build();
+
+        // Map base entity fields to inventory view DTO
+        mapBaseEntityToDto(shoe, shoeInventoryViewDto);
+
+        return shoeInventoryViewDto;
     }
 }

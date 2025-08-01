@@ -80,6 +80,18 @@ public class Shoe extends BaseEntity {
     private BigDecimal basePrice;
 
     /**
+     * Total count of active shoe models for this shoe (calculated, not stored)
+     */
+    @Transient
+    private Integer totalModelCount;
+
+    /**
+     * Total available stock across all models and sizes (calculated, not stored)
+     */
+    @Transient
+    private Integer totalAvailableStock;
+
+    /**
      * Flag indicating if shoe is active
      */
     @Column(name = "is_active", nullable = false)

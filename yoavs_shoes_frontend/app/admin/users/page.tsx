@@ -5,9 +5,7 @@ import Link from 'next/link';
 import {
   useUsers,
   useSearchUsers,
-  useToggleUserStatus
 } from '@hooks';
-import { User } from '@/lib/types';
 
 
 export default function AdminUsersPage() {
@@ -18,7 +16,6 @@ export default function AdminUsersPage() {
     firstName: '',
     lastName: '',
     isAdmin: undefined as boolean | undefined,
-    isActive: undefined as boolean | undefined,
   });
   const [isSearching, setIsSearching] = useState(false);
 
@@ -34,7 +31,6 @@ export default function AdminUsersPage() {
     error: searchUsersError
   } = useSearchUsers(searchFilters, page, size);
 
-  const toggleUserStatusMutation = useToggleUserStatus();
 
   const usersData = isSearching ? searchUsersData : allUsersData;
   const isLoading = isSearching ? searchUsersLoading : allUsersLoading;
@@ -54,19 +50,11 @@ export default function AdminUsersPage() {
       firstName: '',
       lastName: '',
       isAdmin: undefined,
-      isActive: undefined,
     });
     setIsSearching(false);
     setPage(0);
   };
 
-  const handleToggleUserStatus = async (userId: number) => {
-    try {
-      await toggleUserStatusMutation.mutateAsync(userId);
-    } catch (error) {
-      console.error('Failed to toggle user status:', error);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -87,8 +75,8 @@ export default function AdminUsersPage() {
     );
   }
 
-  const users = usersData?.data?.data?.content || [];
-  const totalPages = usersData?.data?.data?.totalPages || 0;
+  const users = usersData?.data?.content || [];
+  const totalPages = usersData?.data?.totalPages || 0;
 
   return (
     <div className="space-y-6">
@@ -165,23 +153,7 @@ export default function AdminUsersPage() {
               <option value="false">Regular User</option>
             </select>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Account Status
-            </label>
-            <select
-              value={searchFilters.isActive === undefined ? '' : searchFilters.isActive.toString()}
-              onChange={(e) => setSearchFilters({ 
-                ...searchFilters, 
-                isActive: e.target.value === '' ? undefined : e.target.value === 'true' 
-              })}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            >
-              <option value="">All</option>
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
-            </select>
-          </div>
+
         </div>
         <div className="flex space-x-3">
           <button
@@ -240,7 +212,7 @@ export default function AdminUsersPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user: User) => (
+                {users.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
@@ -285,17 +257,6 @@ export default function AdminUsersPage() {
                         >
                           View
                         </Link>
-                        <button
-                          onClick={() => handleToggleUserStatus(user.id)}
-                          disabled={toggleUserStatusMutation.isPending}
-                          className={`${
-                            user.isActive
-                              ? 'text-red-600 hover:text-red-900'
-                              : 'text-green-600 hover:text-green-900'
-                          } disabled:opacity-50`}
-                        >
-                          {user.isActive ? 'Deactivate' : 'Activate'}
-                        </button>
                       </div>
                     </td>
                   </tr>

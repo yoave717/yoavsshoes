@@ -1,4 +1,5 @@
 import { StandardResponse } from './common';
+import { User } from './user';
 
 export interface LoginRequest {
   email: string;
@@ -14,19 +15,7 @@ export interface RegisterRequest {
   phoneNumber?: string;
 }
 
-// User type matching backend AuthResponse.UserInfo
-export interface User {
-  id: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  phoneNumber?: string;
-  isAdmin: boolean;
-  isActive: boolean;
-  createdAt: string;
-  lastLogin: string;
-}
+
 
 // Auth response data matching backend AuthResponse
 export interface AuthResponseData {

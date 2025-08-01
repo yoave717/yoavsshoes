@@ -1,10 +1,9 @@
 package com.shoestore.dto.shoe;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import com.shoestore.dto.base.BaseCrudDto;
 import com.shoestore.dto.view.Views;
+import com.shoestore.entity.shoe.Shoe;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +14,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 
 @Data
@@ -31,13 +33,19 @@ public class ShoeDto extends BaseCrudDto {
     private BigDecimal basePrice;
 
     @JsonView(Views.Summary.class)
-    private String gender;
+    private Shoe.Gender gender;
 
-    @JsonView(Views.Detailed.class)
+    @JsonView(Views.Summary.class)
     private BrandDto brand;
 
-    @JsonView(Views.Detailed.class)
+    @JsonView(Views.Summary.class)
     private ShoeCategoryDto category;
+
+    @JsonView(Views.Detailed.class)
+    private List<ShoeModelDto> models;
+
+    @JsonView(Views.Summary.class)
+    private Boolean isActive;
 
     /**
      * DTO for creating shoes
@@ -65,7 +73,7 @@ public class ShoeDto extends BaseCrudDto {
 
         @Schema(description = "Gender", required = true, example = "UNISEX")
         @NotBlank(message = "Gender is required")
-        private String gender;
+        private Shoe.Gender gender;
 
         @Schema(description = "Brand ID", required = true, example = "1")
         @NotNull(message = "Brand ID is required")
@@ -102,7 +110,7 @@ public class ShoeDto extends BaseCrudDto {
         private BigDecimal basePrice;
 
         @Schema(description = "Gender", example = "UNISEX")
-        private String gender;
+        private Shoe.Gender gender;
 
         @Schema(description = "Brand ID", example = "1")
         private Long brandId;
@@ -135,7 +143,7 @@ public class ShoeDto extends BaseCrudDto {
         private BigDecimal basePrice;
 
         @Schema(description = "Gender", example = "UNISEX")
-        private String gender;
+        private Shoe.Gender gender;
 
         @Schema(description = "Brand ID", example = "1")
         private Long brandId;
@@ -146,4 +154,22 @@ public class ShoeDto extends BaseCrudDto {
         @Schema(description = "Is active", example = "true")
         private Boolean isActive;
     }   
+
+    /**
+     * DTO for shoe inventory view
+     */
+    @Data
+    @SuperBuilder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "Shoe inventory view DTO")
+    @EqualsAndHashCode(callSuper = true)
+    public static class ShoeInventoryViewDto extends ShoeDto {
+      
+        @JsonView(Views.Summary.class)
+        private Long modelCount;
+
+        @JsonView(Views.Summary.class)
+        private Long totalStock;
+    }
 }

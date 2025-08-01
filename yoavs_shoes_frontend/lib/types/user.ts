@@ -34,7 +34,10 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   fullName?: string;
+  lastLogin?: string;
 }
+
+
 
 export interface UserSearchFilters {
   email?: string;
