@@ -2,17 +2,21 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import StatCard from '@/components/admin/StatCard';
-import InventoryShoeRow from '@/components/admin/inventory/InventoryShoeRow';
+import InventoryFilters from '@/components/admin/inventory/InventoryFilters';
 import AddSizeModal from '@/components/admin/inventory/AddSizeModal';
 import AddShoeModal from '@/components/admin/inventory/AddShoeModal';
 import AddModelModal from '@/components/admin/inventory/AddModelModal';
+import InventoryTable from '@/components/admin/inventory/InventoryTable';
 import { useShoesForInventory } from '@hooks';
-import { ShoeInventoryView, ExtendedShoe, ExtendedShoeModel, ShoeFilters} from '@types';
+import { ShoeInventoryView, ExtendedShoe, ExtendedShoeModel, ShoeFilters, Brand, Category} from '@types';
 import { useShoeStats } from '@/lib/hooks/shoes/useShoes';
 
 export default function InventoryPage() {
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
+
   const [page, setPage] = useState(0);
   const [showAddShoeModal, setShowAddShoeModal] = useState(false);
   const [showAddModelModal, setShowAddModelModal] = useState(false);
@@ -26,17 +30,20 @@ export default function InventoryPage() {
     page,
     size: 20,
     searchTerm: searchTerm || undefined,
-    categoryIds: selectedCategory ? [parseInt(selectedCategory)] : undefined,
+    categoryIds: selectedCategory ? selectedCategory.id : undefined,
+    brandIds: selectedBrand ? selectedBrand.id : undefined,
     sortBy: 'name',
     sortDirection: 'asc' as const,
-  }), [page, searchTerm, selectedCategory]);
+  }), [page, searchTerm, selectedCategory, selectedBrand]);
 
   // Fetch shoes with pagination
   const { data: shoesResponse, isLoading, error } = useShoesForInventory(filters);
 
-    const shoes = useMemo(() => shoesResponse?.data?.content || [], [shoesResponse]);
+  const shoes = useMemo(() => shoesResponse?.data?.content || [], [shoesResponse]);
 
-    const { data: stats, isLoading: isStatsLoading, error: statsError } = useShoeStats();
+  const { data: stats, isLoading: isStatsLoading, error: statsError } = useShoeStats();
+
+
 
   // Handle pagination
   const handlePageChange = (newPage: number) => {
@@ -74,6 +81,13 @@ export default function InventoryPage() {
     setShowAddModelModal(false);
     setEditingShoeModel(null);
     setSelectedShoeForModel(null);
+  };
+
+  // Handle clear filters
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSelectedBrand(null);
+    setSelectedCategory(null);
   };
 
   if (isLoading) {
@@ -141,160 +155,33 @@ export default function InventoryPage() {
       )}
 
       {/* Filters */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Search Shoes
-            </label>
-            <input
-              type="text"
-              placeholder="Search by name, brand, or color..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="">All Categories</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div> */}
-
-          <div className="flex items-end">
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('');
-              }}
-              className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
-      </div>
+      <InventoryFilters
+        searchTerm={searchTerm}
+        selectedBrand={selectedBrand}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        onSearchChange={setSearchTerm}
+        onBrandChange={setSelectedBrand}
+        onClearFilters={handleClearFilters}
+      />
 
       {/* Shoes Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Shoe / Model
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Variants / Color
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Sizes & Stock
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total Stock
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {shoes.map((shoe) => (
-                <InventoryShoeRow
-                  key={shoe.id}
-                  shoe={shoe}
-                  onStockUpdate={() => {}} // TODO: Implement with mutations
-                  onRemoveSize={() => {}} // TODO: Implement with mutations
-                  onEditModel={setEditingShoeModel}
-                  onDeleteModel={() => {}} // TODO: Implement with mutations
-                  onAddSize={(model) => {
-                    setSelectedModelForSizes(model);
-                    setShowSizeModal(true);
-                  }}
-                  onAddModel={(shoe) => {
-                    setSelectedShoeForModel(shoe);
-                    setShowAddModelModal(true);
-                  }}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {shoes.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-500">No shoes found</div>
-          </div>
-        )}
-
-        {/* Pagination */}
-        {shoesResponse && shoesResponse.data?.totalPages > 1 && (
-          <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 0}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page >= shoesResponse.data?.totalPages - 1}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{page * filters.size! + 1}</span> to{' '}
-                  <span className="font-medium">
-                    {Math.min((page + 1) * filters.size!, shoesResponse.data.totalElements)}
-                  </span>{' '}
-                  of <span className="font-medium">{shoesResponse.data.totalElements}</span> results
-                </p>
-              </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                  <button
-                    onClick={() => handlePageChange(page - 1)}
-                    disabled={page === 0}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => handlePageChange(page + 1)}
-                    disabled={page >= shoesResponse.data.totalPages - 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Next
-                  </button>
-                </nav>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      <InventoryTable
+        shoes={shoes}
+        shoesResponse={shoesResponse}
+        filters={filters}
+        page={page}
+        onPageChange={handlePageChange}
+        onEditModel={setEditingShoeModel}
+        onAddSize={(model) => {
+          setSelectedModelForSizes(model);
+          setShowSizeModal(true);
+        }}
+        onAddModel={(shoe) => {
+          setSelectedShoeForModel(shoe);
+          setShowAddModelModal(true);
+        }}
+      />
 
       {/* Modals */}
       <AddSizeModal

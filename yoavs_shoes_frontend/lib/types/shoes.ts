@@ -59,8 +59,8 @@ export interface ShoesStats {
 }
 
 export interface ShoeFilters extends PageFilter {
-  brandIds?: number[];
-  categoryIds?: number[];
+  brandIds?: string;
+  categoryIds?: string;
   minPrice?: number;
   maxPrice?: number;
   searchTerm?: string;

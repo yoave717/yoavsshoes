@@ -145,7 +145,7 @@ public class ShoeController extends CrudController<
             @RequestParam(required = false) List<Long> categoryIds,
             
             @Parameter(description = "Search term for shoe name or brand") 
-            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String searchTerm,
             
             @Parameter(description = "Filter by gender") 
             @RequestParam(required = false) String gender,
@@ -166,7 +166,7 @@ public class ShoeController extends CrudController<
                 .sortDirection(sortDirection)
                 .brandIds(brandIds)
                 .categoryIds(categoryIds)
-                .searchTerm(search)
+                .searchTerm(searchTerm)
                 .minPrice(minPrice)
                 .maxPrice(maxPrice)
                 .activeOnly(true)

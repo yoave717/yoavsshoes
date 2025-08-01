@@ -1,7 +1,6 @@
 import { PageFilter } from "./common";
 import { Shoe, ShoeModel } from "./shoes";
 
-
 export interface ProductFilters extends PageFilter {
   brandIds?: number[];
   categoryIds?: number[];
@@ -19,9 +18,6 @@ export interface AvailableFilters {
   colors: string[];
   priceRange: { min: number; max: number };
 }
-
-
-
 
 export interface ExtendedShoeModel extends ShoeModel {
   totalStock: number;

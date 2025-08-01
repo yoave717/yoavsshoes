@@ -24,6 +24,7 @@ export default function InventoryShoeRow({
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedModels, setExpandedModels] = useState<Set<number>>(new Set());
 
+
   const getStockStatus = (totalStock: number) => {
     if (totalStock === 0) return { label: 'Out of Stock', color: 'text-red-600 bg-red-100' };
     if (totalStock <= 10) return { label: 'Low Stock', color: 'text-yellow-600 bg-yellow-100' };
@@ -74,11 +75,6 @@ export default function InventoryShoeRow({
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
           ${shoe.basePrice}
-        </td>
-        <td className="px-6 py-4">
-          <div className="text-sm text-gray-600">
-            {shoe.modelCount} color variants
-          </div>
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
           {shoe.totalStock}

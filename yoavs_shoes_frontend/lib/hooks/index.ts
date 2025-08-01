@@ -18,3 +18,9 @@ export * from './orders';
 
 // User hooks
 export * from './users';
+
+// Brands hooks
+export * from './brands';
+
+// Categories hooks
+export * from './categories';
