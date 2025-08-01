@@ -84,18 +84,21 @@ export default function InventoryShoeRow({
       </tr>
 
       {/* Expanded Models Table */}
-      {isExpanded && models && !isModelsLoading && (
+      {isExpanded && (
         <tr>
           <td colSpan={7} className="px-6 py-4 bg-gray-50">
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-gray-900">Models for {shoe.name}</h4>
-              <ModelTable
-                models={models}
-                onStockUpdate={onStockUpdate}
-                onEditModel={onEditModel}
-                onDeleteModel={onDeleteModel}
-                onAddSize={onAddSize}
-              />
+              {!isModelsLoading && models ? (
+                <ModelTable
+                  models={models}
+                  onStockUpdate={onStockUpdate}
+                  onEditModel={onEditModel}
+                  onDeleteModel={onDeleteModel}
+                  onAddSize={onAddSize}
+                />
+              ) : 
+                <div className="text-gray-500">Loading models...</div>}
             </div>
           </td>
         </tr>

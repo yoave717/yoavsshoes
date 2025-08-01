@@ -8,8 +8,9 @@ import AddShoeModal from '@/components/admin/inventory/AddShoeModal';
 import AddModelModal from '@/components/admin/inventory/AddModelModal';
 import InventoryTable from '@/components/admin/inventory/InventoryTable';
 import { useCreateShoe, useShoesForInventory } from '@hooks';
-import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters, Brand, Category, CreateShoeRequest} from '@types';
+import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters, Brand, Category, CreateShoeRequest, CreateShoeModelRequest} from '@types';
 import { useShoeStats } from '@/lib/hooks/shoes/useShoes';
+import { useCreateShoeModel } from '@/lib/hooks/shoes/useCreateShoeModel';
 
 export default function InventoryPage() {
 
@@ -45,6 +46,8 @@ export default function InventoryPage() {
 
   const { mutate: createShoe } = useCreateShoe();
 
+  const { mutate: createShoeModel } = useCreateShoeModel();
+
   // Handle pagination
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -66,8 +69,11 @@ export default function InventoryPage() {
     setShowAddShoeModal(false);
   };
 
-  const handleSaveModel = (modelData: any) => {
+  const handleSaveModel = (modelData: CreateShoeModelRequest) => {
     console.log('Saving model:', modelData);
+
+    createShoeModel(modelData);
+
     setShowAddModelModal(false);
     setEditingShoeModel(null);
     setSelectedShoeForModel(null);

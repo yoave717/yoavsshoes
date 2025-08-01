@@ -22,6 +22,17 @@ export interface CreateShoeRequest {
   isActive?: boolean;
 }
 
+export interface CreateShoeModelRequest {
+  shoeId: number;
+  modelName: string;
+  color: string;
+  material?: string;
+  sku: string;
+  price: number;
+  imageUrl?: string;
+  isActive?: boolean;
+}
+
 export interface ShoeModel extends BaseType {
   modelName: string;
   color: string;

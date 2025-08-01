@@ -24,12 +24,19 @@ import java.util.List;
 @Builder
 public class ShoeModel extends BaseEntity {
 
+
+    /**
+     * Shoe ID this model belongs to
+     */
+    @Column(name = "shoe_id", nullable = false)
+    @NotNull(message = "Shoe ID is required")
+    private Long shoeId;
+
     /**
      * Parent shoe this model belongs to
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shoe_id", nullable = false)
-    @NotNull(message = "Shoe is required")
+    @JoinColumn(name = "shoe_id", insertable = false, updatable = false)
     @ToString.Exclude
     private Shoe shoe;
 

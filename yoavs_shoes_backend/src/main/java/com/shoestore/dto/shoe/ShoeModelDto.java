@@ -59,7 +59,9 @@ public class ShoeModelDto extends BaseCrudDto {
     private String fullDisplayName;
 
     @JsonView(Views.Detailed.class)
-    private List<ShoeInventoryDto> availableSizes;
+    //default to empty list to avoid null checks
+    @Builder.Default
+    private List<ShoeInventoryDto> availableSizes = List.of();
 
     /**
      * DTO for creating shoe models

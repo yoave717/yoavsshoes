@@ -102,6 +102,7 @@ public class ShoeModelMapper implements BaseCrudMapper<ShoeModel, ShoeModelDto,
                 .sku(dto.getSku())
                 .price(dto.getPrice())
                 .imageUrl(dto.getImageUrl())
+                .shoeId(dto.getShoeId())
                 .isActive(dto.getIsActive() != null ? dto.getIsActive() : true)
                 .build();
     }
