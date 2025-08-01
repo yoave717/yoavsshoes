@@ -33,6 +33,13 @@ export interface CreateShoeModelRequest {
   isActive?: boolean;
 }
 
+export interface CreateShoeInventoryRequest {
+  shoeModelId: number;
+  size: string;
+  quantityAvailable: number;
+  quantityReserved?: number;
+}
+
 export interface ShoeModel extends BaseType {
   modelName: string;
   color: string;

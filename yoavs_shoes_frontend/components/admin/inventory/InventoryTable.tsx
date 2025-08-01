@@ -2,7 +2,7 @@
 
 import InventoryShoeRow from '@/components/admin/inventory/InventoryShoeRow';
 import { useUpdateShoeInventory } from '@/lib/hooks/shoes/useShoes';
-import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters } from '@types';
+import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters, ShoeModelInventoryView } from '@types';
 
 interface InventoryTableProps {
   shoes: ShoeInventoryView[];
@@ -11,7 +11,7 @@ interface InventoryTableProps {
   page: number;
   onPageChange: (newPage: number) => void;
   onEditModel: (model: ExtendedShoeModel) => void;
-  onAddSize: (model: ExtendedShoeModel) => void;
+  onAddSize: (model: ShoeModelInventoryView) => void;
   onAddModel: (shoe: ShoeInventoryView) => void;
 }
 

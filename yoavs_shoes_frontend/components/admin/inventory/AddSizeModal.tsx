@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { ExtendedShoeModel } from '@/lib/types/product';
+import { ShoeModelInventoryView } from '@types';
 
 interface AddSizeModalProps {
   isOpen: boolean;
-  selectedModel: ExtendedShoeModel | null;
+  selectedModel: ShoeModelInventoryView;
   onClose: () => void;
-  onAddSize: (size: string, quantity: number) => void;
+  onAddSize: (shoeId: number, shoeModelId: number, size: string, quantity: number) => void;
 }
 
 export default function AddSizeModal({ 
@@ -19,7 +19,7 @@ export default function AddSizeModal({
 
   const handleSubmit = () => {
     if (newSize) {
-      onAddSize(newSize, newSizeQuantity);
+      onAddSize(selectedModel.shoe.id, selectedModel.id, newSize, newSizeQuantity);
       setNewSize('');
       setNewSizeQuantity(0);
       onClose();
@@ -35,7 +35,7 @@ export default function AddSizeModal({
   if (!isOpen || !selectedModel) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-gray-600/60 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-sm">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
           Add Size to {selectedModel.fullDisplayName}

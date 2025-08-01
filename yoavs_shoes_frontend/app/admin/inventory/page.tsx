@@ -8,8 +8,8 @@ import AddShoeModal from '@/components/admin/inventory/AddShoeModal';
 import AddModelModal from '@/components/admin/inventory/AddModelModal';
 import InventoryTable from '@/components/admin/inventory/InventoryTable';
 import { useCreateShoe, useShoesForInventory } from '@hooks';
-import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters, Brand, Category, CreateShoeRequest, CreateShoeModelRequest} from '@types';
-import { useShoeStats } from '@/lib/hooks/shoes/useShoes';
+import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters, Brand, Category, CreateShoeRequest, CreateShoeModelRequest, ShoeModelInventoryView} from '@types';
+import { useCreateShoeInventory, useShoeStats } from '@/lib/hooks/shoes/useShoes';
 import { useCreateShoeModel } from '@/lib/hooks/shoes/useCreateShoeModel';
 
 export default function InventoryPage() {
@@ -23,7 +23,7 @@ export default function InventoryPage() {
   const [showAddModelModal, setShowAddModelModal] = useState(false);
   const [editingShoeModel, setEditingShoeModel] = useState<ExtendedShoeModel | null>(null);
   const [showSizeModal, setShowSizeModal] = useState(false);
-  const [selectedModelForSizes, setSelectedModelForSizes] = useState<ExtendedShoeModel | null>(null);
+  const [selectedModelForSizes, setSelectedModelForSizes] = useState<ShoeModelInventoryView | null>(null);
   const [selectedShoeForModel, setSelectedShoeForModel] = useState<ShoeInventoryView | null>(null);
 
   // Create filters object for API call
@@ -47,6 +47,8 @@ export default function InventoryPage() {
   const { mutate: createShoe } = useCreateShoe();
 
   const { mutate: createShoeModel } = useCreateShoeModel();
+
+  const { mutate: createShoeInventory } = useCreateShoeInventory();
 
   // Handle pagination
   const handlePageChange = (newPage: number) => {
@@ -77,6 +79,12 @@ export default function InventoryPage() {
     setShowAddModelModal(false);
     setEditingShoeModel(null);
     setSelectedShoeForModel(null);
+  };
+
+  const handleAddSize = (shoeId: number, shoeModelId: number, size: string, quantity: number) => {
+    createShoeInventory({ shoeId, shoeModelId, size, quantityAvailable: quantity });
+    setShowSizeModal(false);
+    setSelectedModelForSizes(null);
   };
 
   // Handle clear filters
@@ -180,15 +188,17 @@ export default function InventoryPage() {
       />
 
       {/* Modals */}
-      <AddSizeModal
-        isOpen={showSizeModal}
-        selectedModel={selectedModelForSizes}
-        onClose={() => {
-          setShowSizeModal(false);
-          setSelectedModelForSizes(null);
-        }}
-        onAddSize={() => {}} // TODO: Implement with mutations
-      />
+      {selectedModelForSizes && (
+        <AddSizeModal
+          isOpen={showSizeModal}
+          selectedModel={selectedModelForSizes}
+          onClose={() => {
+            setShowSizeModal(false);
+            setSelectedModelForSizes(null);
+          }}
+          onAddSize={handleAddSize}
+          />
+        )}
 
       <AddShoeModal
         isOpen={showAddShoeModal}

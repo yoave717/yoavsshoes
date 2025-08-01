@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ExtendedShoeModel } from '@/lib/types/product';
 import React from 'react';
-import { ShoeInventoryView } from '@/lib/types';
+import { ShoeInventoryView, ShoeModelInventoryView } from '@/lib/types';
 import { useShoeModels } from '@/lib/hooks/shoes/useShoes';
 import ModelTable from './ModelTable';
 
@@ -10,7 +10,7 @@ interface InventoryShoeRowProps {
   onStockUpdate: (modelId: number, size: string, newQuantity: number) => void;
   onEditModel: (model: ExtendedShoeModel) => void;
   onDeleteModel: (modelId: number) => void;
-  onAddSize: (model: ExtendedShoeModel) => void;
+  onAddSize: (model: ShoeModelInventoryView) => void;
   onAddModel: (shoe: ShoeInventoryView) => void;
 }
 

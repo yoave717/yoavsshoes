@@ -1,6 +1,6 @@
 import {  keepPreviousData, useMutation, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { shoeInventoryApi, shoesApi } from '@api';
-import { ShoeFilters, PageResponse, Shoe, ShoeModelInventoryView, ShoeModel } from '@/lib/types';
+import { ShoeFilters, PageResponse, Shoe, ShoeModelInventoryView, ShoeModel, CreateShoeInventoryRequest } from '@/lib/types';
 
 export const useShoes = (filters: ShoeFilters = {}): UseQueryResult<PageResponse<Shoe>, Error> => {
   return useQuery({
@@ -104,5 +104,24 @@ export const useUpdateShoeInventory = () => {
       queryClient.invalidateQueries({ queryKey: ['shoes', 'inventory'] });
       queryClient.invalidateQueries({ queryKey: ['shoe-stats'] });
     }
+  });
+}
+
+export const useCreateShoeInventory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (newInventory: CreateShoeInventoryRequest & { shoeId: number }) => {
+      const { shoeId, ...inventoryData } = newInventory;
+      return shoeInventoryApi.createInventory(inventoryData);
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['shoe-models', variables.shoeId] });
+      queryClient.invalidateQueries({ queryKey: ['shoes', 'inventory'] });
+      queryClient.invalidateQueries({ queryKey: ['shoe-stats'] });
+    },
+    onError: (error) => {
+      console.error('Error creating shoe inventory:', error);
+    },
   });
 }

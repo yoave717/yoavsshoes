@@ -84,7 +84,7 @@ public class ShoeInventoryMapper implements BaseCrudMapper<ShoeInventory, ShoeIn
                 .size(dto.getSize())
                 .quantityAvailable(dto.getQuantityAvailable())
                 .quantityReserved(dto.getQuantityReserved() != null ? dto.getQuantityReserved() : 0)
-                // Note: ShoeModel entity will be set in service layer using shoeModelId
+                .shoeModelId(dto.getShoeModelId())
                 .build();
     }
 
