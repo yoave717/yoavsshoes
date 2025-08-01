@@ -1,8 +1,5 @@
 package com.shoestore.repository.shoe;
 
-import com.shoestore.dto.shoe.ShoeDto.ShoeInventoryViewDto;
-import com.shoestore.dto.shoe.BrandDto;
-import com.shoestore.dto.shoe.ShoeCategoryDto;
 import com.shoestore.entity.shoe.IShoeInventoryView;
 import com.shoestore.entity.shoe.Shoe;
 import com.shoestore.repository.base.BaseRepository;
@@ -56,5 +53,16 @@ public interface ShoeRepository extends BaseRepository<Shoe, Long>, JpaSpecifica
             @Param("maxPrice") BigDecimal maxPrice,
             Pageable pageable
     );
+
+    /*
+     * Count shoe models with available stock less than a specified threshold
+     * available stock is determined by the ShoeInventory entity, each shoe model has a list of available sizes
+     */
+    @Query("SELECT COUNT(s) " +
+           "FROM Shoe s " +
+           "JOIN s.shoeModels sm " +
+           "JOIN sm.availableSizes si " +
+           "WHERE si.quantityAvailable < :threshold AND s.isActive = true")
+    long countShoeModelsWithLowStock(@Param("threshold") int threshold);
 
 }

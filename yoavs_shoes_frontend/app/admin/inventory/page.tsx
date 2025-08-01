@@ -8,6 +8,7 @@ import AddShoeModal from '@/components/admin/inventory/AddShoeModal';
 import AddModelModal from '@/components/admin/inventory/AddModelModal';
 import { useShoesForInventory } from '@hooks';
 import { ShoeInventoryView, ExtendedShoe, ExtendedShoeModel, ShoeFilters} from '@types';
+import { useShoeStats } from '@/lib/hooks/shoes/useShoes';
 
 export default function InventoryPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,19 +35,8 @@ export default function InventoryPage() {
   const { data: shoesResponse, isLoading, error } = useShoesForInventory(filters);
 
     const shoes = useMemo(() => shoesResponse?.data?.content || [], [shoesResponse]);
-  // Calculate stats
-  const stats = useMemo(() => {
-    const totalModels = shoes.reduce((sum, shoe) => sum + shoe.modelCount, 0);
-    const totalStock = shoes.reduce((sum, shoe) => sum + shoe.totalStock, 0);
-    const lowStockShoes = shoes.filter(s => s.totalStock <= 10).length;
 
-    return {
-      totalShoes: shoes.length,
-      totalModels,
-      totalStock,
-      lowStockShoes,
-    };
-  }, [shoes]);
+    const { data: stats, isLoading: isStatsLoading, error: statsError } = useShoeStats();
 
   // Handle pagination
   const handlePageChange = (newPage: number) => {
@@ -121,32 +111,34 @@ export default function InventoryPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Total Shoes"
-          value={stats.totalShoes}
-          icon="👟"
-          color="blue"
-        />
-        <StatCard
-          title="Total Models"
-          value={stats.totalModels}
-          icon="🎨"
-          color="green"
-        />
-        <StatCard
-          title="Total Stock"
-          value={stats.totalStock}
-          icon="📦"
-          color="yellow"
-        />
-        <StatCard
-          title="Low Stock Shoes"
-          value={stats.lowStockShoes}
-          icon="⚠️"
-          color="red"
-        />
-      </div>
+      {(stats && !isStatsLoading && !statsError) && (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+        title="Total Shoes"
+        value={stats.totalShoes}
+        icon="👟"
+        color="blue"
+          />
+          <StatCard
+        title="Total Models"
+        value={stats.totalModels}
+        icon="🎨"
+        color="green"
+          />
+          <StatCard
+        title="Total Stock"
+        value={stats.totalStock}
+        icon="📦"
+        color="yellow"
+          />
+          <StatCard
+        title="Low Stock Shoes"
+        value={stats.lowStockShoes}
+        icon="⚠️"
+        color="red"
+          />
+        </div>
+      )}
 
       {/* Filters */}
       <div className="bg-white shadow rounded-lg p-6">

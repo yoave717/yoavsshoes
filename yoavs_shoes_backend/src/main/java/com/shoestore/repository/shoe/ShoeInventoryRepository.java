@@ -32,4 +32,11 @@ public interface ShoeInventoryRepository extends BaseRepository<ShoeInventory, L
      */
     @Query("SELECT si FROM ShoeInventory si WHERE si.shoeModel = :shoeModel AND si.quantityAvailable > 0")
     List<ShoeInventory> findAvailableByShoeModel(@Param("shoeModel") ShoeModel shoeModel);
+
+    /**
+     * Get total available stock for all shoe models
+     */
+    @Query("SELECT SUM(si.quantityAvailable) FROM ShoeInventory si WHERE si.quantityAvailable > 0")
+    Long getTotalAvailableStock();
+
 }

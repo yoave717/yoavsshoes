@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST Controller for shoe operations
@@ -177,6 +178,22 @@ public class ShoeController extends CrudController<
         PageResponse<ShoeInventoryViewDto> pageResponse = new PageResponse<>(shoes.map(view -> mapper.toInventoryViewDto(view.getShoe(), view.getModelCount(), view.getTotalStock())));
         
         return success(pageResponse, "Shoes with model count retrieved successfully");
+    }
+
+    /**
+     * Get shoe statistics
+     */
+    @GetMapping("/stats")
+    @Operation(
+        summary = "Get shoe statistics",
+        description = "Retrieve statistics about shoes including total count, model count, and stock information"
+    )
+    public ResponseEntity<StandardResponse<Map<String, Object>>> getShoeStatistics() {
+        log.debug("Getting shoe statistics");
+
+        Map<String, Object> stats = service.getShoeStatistics();
+
+        return success(stats, "Shoe statistics retrieved successfully");
     }
 
     @Override

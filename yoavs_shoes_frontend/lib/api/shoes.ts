@@ -1,29 +1,29 @@
 import api from './client';
-import { PageResponse, Shoe, ShoeFilters, ShoeInventoryView, StandardResponse } from '@types';
+import { PageResponse, Shoe, ShoeFilters, ShoeInventoryView, ShoesStats, StandardResponse } from '@types';
 
 // Shoes API functions
 export const shoesApi = {
-  getShoes: async (filters: ShoeFilters = {}): Promise<PageResponse<Shoe>> => {
+  getShoes: async (filters: ShoeFilters = {}) => {
     const response = await api.get<StandardResponse<PageResponse<Shoe>>>('/shoes/filtered', { params: filters });
     return response.data.data;
   },
 
-  getAllShoes: async (filters: ShoeFilters = {}): Promise<PageResponse<Shoe>> => {
+  getAllShoes: async (filters: ShoeFilters = {}) => {
     const response = await api.get<StandardResponse<PageResponse<Shoe>>>('/shoes', { params: filters });
     return response.data.data;
   },
 
-  getShoe: async (id: number): Promise<Shoe> => {
+  getShoe: async (id: number) => {
     const response = await api.get<StandardResponse<Shoe>>(`/shoes/${id}`);
     return response.data.data;
   },
 
-  createShoe: async (shoe: Omit<Shoe, 'id'>): Promise<Shoe> => {
+  createShoe: async (shoe: Omit<Shoe, 'id'>) => {
     const response = await api.post<StandardResponse<Shoe>>('/shoes', shoe);
     return response.data.data;
   },
 
-  updateShoe: async (id: number, shoe: Partial<Shoe>): Promise<Shoe> => {
+  updateShoe: async (id: number, shoe: Partial<Shoe>) => {
     const response = await api.put<StandardResponse<Shoe>>(`/shoes/${id}`, shoe);
     return response.data.data;
   },
@@ -36,5 +36,10 @@ export const shoesApi = {
   getShoesForInventory: async (filters: ShoeFilters = {}) => {
     const response = await api.get<StandardResponse<PageResponse<ShoeInventoryView>>>('/shoes/with-model-count', { params: filters });
     return response.data;
+  },
+
+  getShoeStats: async () => {
+    const response = await api.get<StandardResponse<ShoesStats>>('/shoes/stats');
+    return response.data.data;
   },
 };

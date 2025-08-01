@@ -1,4 +1,4 @@
-import { BaseType } from "./common";
+import { BaseType, PageFilter } from "./common";
 
 
 export interface ShoeInventory extends BaseType {
@@ -49,5 +49,22 @@ export interface Shoe extends BaseType{
 export interface ShoeInventoryView extends Shoe {
    totalStock: number;
    modelCount: number;
+}
+
+export interface ShoesStats {
+  totalShoes: number;
+  totalModels: number;
+  totalStock: number;
+  lowStockShoes: number;
+}
+
+export interface ShoeFilters extends PageFilter {
+  brandIds?: number[];
+  categoryIds?: number[];
+  minPrice?: number;
+  maxPrice?: number;
+  searchTerm?: string;
+  inStock?: boolean;
+  activeOnly?: boolean;
 }
 

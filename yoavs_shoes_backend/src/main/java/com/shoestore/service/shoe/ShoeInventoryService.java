@@ -67,8 +67,13 @@ public class ShoeInventoryService extends BaseService<ShoeInventory, Long, ShoeI
         return repository.findAvailableByShoeModel(shoeModel);
     }
 
-
-
+    /**
+     * Get total available stock across all shoe models
+     */
+    public Long getTotalAvailableStock() {
+        log.debug("Getting total available stock across all shoe models");
+        return repository.getTotalAvailableStock();
+    }
 
     /**
      * Reserve inventory for an order

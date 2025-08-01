@@ -29,3 +29,12 @@ export const useShoe = (id: number): UseQueryResult<Shoe, Error> => {
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };
+
+export const useShoeStats = () => {
+  return useQuery({
+    queryKey: ['shoe-stats'],
+    queryFn: () => shoesApi.getShoeStats(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
+};

@@ -1,8 +1,6 @@
 package com.shoestore.service.shoe;
 
-import com.shoestore.dto.shoe.ShoeDto.ShoeInventoryViewDto;
 import com.shoestore.dto.shoe.ShoeFilterCriteria;
-import com.shoestore.dto.shoe.ShoeMapper;
 import com.shoestore.entity.shoe.*;
 import com.shoestore.repository.shoe.*;
 import com.shoestore.service.base.BaseService;
@@ -28,16 +26,22 @@ public class ShoeService extends BaseService<Shoe, Long, ShoeRepository> {
     private final ShoeRepository shoeRepository;
     private final BrandRepository brandRepository;
     private final ShoeCategoryRepository categoryRepository;
+    private final ShoeModelService shoeModelService;
+    private final ShoeInventoryService shoeInventoryService;
 
     public ShoeService(
             ShoeRepository shoeRepository,
             BrandRepository brandRepository,
-            ShoeCategoryRepository categoryRepository
+            ShoeCategoryRepository categoryRepository,
+            ShoeModelService shoeModelService,
+            ShoeInventoryService shoeInventoryService
     ) {
         super(shoeRepository, "Shoe");
         this.shoeRepository = shoeRepository;
         this.brandRepository = brandRepository;
         this.categoryRepository = categoryRepository;
+        this.shoeInventoryService = shoeInventoryService;
+        this.shoeModelService = shoeModelService;
     }
 
     @Override
@@ -66,27 +70,45 @@ public class ShoeService extends BaseService<Shoe, Long, ShoeRepository> {
         return shoeRepository.findAll(spec, pageable);
     }
 
-    /** 
-     * Create Pageable for pagination and sorting
+       /**
+     * Get shoes with model count using aggregation query
      */
-    private Pageable createPageable(ShoeFilterCriteria criteria) {
-        Sort.Direction direction = "DESC".equalsIgnoreCase(criteria.getSortDirection()) 
-                ? Sort.Direction.DESC : Sort.Direction.ASC;
+    public Page<IShoeInventoryView> getShoesWithModelCountAggregated(ShoeFilterCriteria criteria) {
+        log.debug("Getting shoes with aggregated model count for criteria: {}", criteria);
         
-        Sort sort = switch (criteria.getSortBy().toLowerCase()) {
-            case "baseprice" -> Sort.by(direction, "basePrice");
-            case "brand" -> Sort.by(direction, "brand.name");
-            case "category" -> Sort.by(direction, "category.name");
-            case "createdat" -> Sort.by(direction, "createdAt");
-            default -> Sort.by(direction, "name");
-        };
-
-        return PageRequest.of(
-                criteria.getPage() != null ? criteria.getPage() : 0,
-                criteria.getSize() != null ? criteria.getSize() : 20,
-                sort
+        // Create pageable for pagination and sorting
+        Pageable pageable = createPageable(criteria);
+        
+        // Use repository method for aggregated data
+        return shoeRepository.findShoesWithStockInfo(
+            criteria.getBrandIds(),
+            criteria.getCategoryIds(),
+            criteria.getSearchTerm(),
+            criteria.getGender(),
+            criteria.getMinPrice(),
+            criteria.getMaxPrice(),
+            pageable
         );
     }
+
+    /**
+     * Get shoe stats
+     * Total shoes, total models, total stock, low stock shoes
+     * This method aggregates data across all shoes
+     */
+    public Map<String, Object> getShoeStatistics() {
+        log.debug("Calculating shoe stats");
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalShoes", shoeRepository.count());
+        stats.put("totalModels", shoeModelService.count());
+        stats.put("totalStock", shoeInventoryService.getTotalAvailableStock());
+        stats.put("lowStockShoes", shoeRepository.countShoeModelsWithLowStock(10)); 
+
+        log.debug("Shoe stats calculated: {}", stats);
+        return stats;
+    }
+
 
     @Override
     @Transactional
@@ -156,6 +178,28 @@ public class ShoeService extends BaseService<Shoe, Long, ShoeRepository> {
         }
     }
 
+    /** 
+     * Create Pageable for pagination and sorting
+     */
+    private Pageable createPageable(ShoeFilterCriteria criteria) {
+        Sort.Direction direction = "DESC".equalsIgnoreCase(criteria.getSortDirection()) 
+                ? Sort.Direction.DESC : Sort.Direction.ASC;
+        
+        Sort sort = switch (criteria.getSortBy().toLowerCase()) {
+            case "baseprice" -> Sort.by(direction, "basePrice");
+            case "brand" -> Sort.by(direction, "brand.name");
+            case "category" -> Sort.by(direction, "category.name");
+            case "createdat" -> Sort.by(direction, "createdAt");
+            default -> Sort.by(direction, "name");
+        };
+
+        return PageRequest.of(
+                criteria.getPage() != null ? criteria.getPage() : 0,
+                criteria.getSize() != null ? criteria.getSize() : 20,
+                sort
+        );
+    }
+
     /**
      * Create JPA Specification with proper joins for filtering
      */
@@ -209,95 +253,5 @@ public class ShoeService extends BaseService<Shoe, Long, ShoeRepository> {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
-
-    /**
-     * Get shoes with model count using aggregation query
-     */
-    public Page<IShoeInventoryView> getShoesWithModelCountAggregated(ShoeFilterCriteria criteria) {
-        log.debug("Getting shoes with aggregated model count for criteria: {}", criteria);
-        
-        // Create pageable for pagination and sorting
-        Pageable pageable = createPageable(criteria);
-        
-        // Use repository method for aggregated data
-        return shoeRepository.findShoesWithStockInfo(
-            criteria.getBrandIds(),
-            criteria.getCategoryIds(),
-            criteria.getSearchTerm(),
-            criteria.getGender(),
-            criteria.getMinPrice(),
-            criteria.getMaxPrice(),
-            pageable
-        );
-    }
-
-    /**
-     * Get shoes with model count and total stock using custom query
-     */
-    public Page<Shoe> getShoesWithStockInfo(ShoeFilterCriteria criteria) {
-        log.debug("Getting shoes with stock info for criteria: {}", criteria);
-
-        // Create specification for filtering
-        Specification<Shoe> spec = createSpecificationForStockQuery(criteria);
-
-        // Create pageable for pagination and sorting
-        Pageable pageable = createPageable(criteria);
-
-        // Execute query
-        return shoeRepository.findAll(spec, pageable);
-    }
-
-    /**
-     * Create specification for stock query without fetch joins to avoid cartesian product
-     */
-    private Specification<Shoe> createSpecificationForStockQuery(ShoeFilterCriteria criteria) {
-        return (root, query, criteriaBuilder) -> {
-            // Don't add fetch joins for count queries to avoid cartesian product
-            List<Predicate> predicates = new ArrayList<>();
-
-            // Always filter active entities
-            predicates.add(criteriaBuilder.isTrue(root.get("isActive")));
-
-            // If no criteria provided, return early
-            if (criteria == null) {
-                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-            }
-
-            // Active only filter for related entities
-            if (Boolean.TRUE.equals(criteria.getActiveOnly())) {
-                predicates.add(criteriaBuilder.isTrue(root.get("brand").get("isActive")));
-                predicates.add(criteriaBuilder.isTrue(root.get("category").get("isActive")));
-            }
-
-            // Brand IDs filter
-            if (criteria.getBrandIds() != null && !criteria.getBrandIds().isEmpty()) {
-                predicates.add(root.get("brand").get("id").in(criteria.getBrandIds()));
-            }
-
-            // Category IDs filter
-            if (criteria.getCategoryIds() != null && !criteria.getCategoryIds().isEmpty()) {
-                predicates.add(root.get("category").get("id").in(criteria.getCategoryIds()));
-            }
-
-
-            // Price range filters
-            if (criteria.getMinPrice() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("basePrice"), criteria.getMinPrice()));
-            }
-            if (criteria.getMaxPrice() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("basePrice"), criteria.getMaxPrice()));
-            }
-
-            // Search term filter
-            if (criteria.getSearchTerm() != null && !criteria.getSearchTerm().trim().isEmpty()) {
-                String searchPattern = "%" + criteria.getSearchTerm().toLowerCase() + "%";
-                predicates.add(criteriaBuilder.or(
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("brand").get("name")), searchPattern)
-                ));
-            }
-
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-    }
+   
 }

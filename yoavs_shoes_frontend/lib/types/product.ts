@@ -37,13 +37,3 @@ export interface ShoeWithStockInfo extends Shoe {
   modelCount: number;
   totalStock: number;
 }
-
-export interface ShoeFilters extends PageFilter {
-  brandIds?: number[];
-  categoryIds?: number[];
-  minPrice?: number;
-  maxPrice?: number;
-  searchTerm?: string;
-  inStock?: boolean;
-  activeOnly?: boolean;
-}
