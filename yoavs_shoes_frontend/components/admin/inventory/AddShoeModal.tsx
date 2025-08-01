@@ -1,29 +1,41 @@
+import { useBrands, useCategories } from "@/lib/hooks";
+import { CreateShoeRequest } from "@/lib/types";
+
+
+
 interface AddShoeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddShoe: (shoeData: any) => void;
+  onAddShoe: (shoeData: CreateShoeRequest) => void;
 }
 
 export default function AddShoeModal({ isOpen, onClose, onAddShoe }: AddShoeModalProps) {
+  const { data: brands, isLoading: isBrandsLoading } = useBrands();
+  const { data: categories, isLoading: isCategoriesLoading } = useCategories();
+  
   if (!isOpen) return null;
+
+  if (isBrandsLoading || isCategoriesLoading) {
+    return <div>Loading...</div>;
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
-    const shoeData = {
-      name: formData.get('name'),
-      basePrice: formData.get('basePrice'),
-      gender: formData.get('gender'),
-      brandId: formData.get('brandId'),
-      brandName: formData.get('brandName'),
-      categoryId: formData.get('categoryId'),
-      categoryName: formData.get('categoryName')
+    const shoeData: CreateShoeRequest = {
+      name: formData.get('name') as string,
+      description: formData.get('description') as string || undefined,
+      basePrice: parseFloat(formData.get('basePrice') as string),
+      gender: formData.get('gender') as 'MEN' | 'WOMEN' | 'UNISEX',
+      brandId: parseInt(formData.get('brandId') as string),
+      categoryId: parseInt(formData.get('categoryId') as string),
+      isActive: true
     };
     onAddShoe(shoeData);
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-gray-600/60  flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
           Add New Shoe
@@ -36,8 +48,19 @@ export default function AddShoeModal({ isOpen, onClose, onAddShoe }: AddShoeModa
               name="name"
               type="text"
               required
+              maxLength={255}
               className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="e.g., Air Max 90"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <textarea
+              name="description"
+              rows={2}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Classic running shoe with air cushioning"
             />
           </div>
           
@@ -50,6 +73,7 @@ export default function AddShoeModal({ isOpen, onClose, onAddShoe }: AddShoeModa
               step="0.01"
               required
               className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="149.99"
             />
           </div>
           
@@ -62,10 +86,9 @@ export default function AddShoeModal({ isOpen, onClose, onAddShoe }: AddShoeModa
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Gender</option>
-                <option value="Men">Men</option>
-                <option value="Women">Women</option>
-                <option value="Unisex">Unisex</option>
-                <option value="Kids">Kids</option>
+                <option value="MEN">Men</option>
+                <option value="WOMEN">Women</option>
+                <option value="UNISEX">Unisex</option>
               </select>
             </div>
             
@@ -74,23 +97,13 @@ export default function AddShoeModal({ isOpen, onClose, onAddShoe }: AddShoeModa
               <select
                 name="brandId"
                 required
-                onChange={(e) => {
-                  const selectedOption = e.target.options[e.target.selectedIndex];
-                  const brandNameInput = document.querySelector('input[name="brandName"]') as HTMLInputElement;
-                  if (brandNameInput) {
-                    brandNameInput.value = selectedOption.text;
-                  }
-                }}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Brand</option>
-                <option value="1">Nike</option>
-                <option value="2">Adidas</option>
-                <option value="3">Puma</option>
-                <option value="4">New Balance</option>
-                <option value="5">Converse</option>
+                {brands && brands.content.map(brand => (
+                  <option key={brand.id} value={brand.id}>{brand.name}</option>
+                ))}
               </select>
-              <input name="brandName" type="hidden" />
             </div>
           </div>
           
@@ -99,23 +112,13 @@ export default function AddShoeModal({ isOpen, onClose, onAddShoe }: AddShoeModa
             <select
               name="categoryId"
               required
-              onChange={(e) => {
-                const selectedOption = e.target.options[e.target.selectedIndex];
-                const categoryNameInput = document.querySelector('input[name="categoryName"]') as HTMLInputElement;
-                if (categoryNameInput) {
-                  categoryNameInput.value = selectedOption.text;
-                }
-              }}
               className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Category</option>
-              <option value="1">Running</option>
-              <option value="2">Casual</option>
-              <option value="3">Sports</option>
-              <option value="4">Formal</option>
-              <option value="5">Basketball</option>
+              {categories && categories.content.map(category => (
+                <option key={category.id} value={category.id}>{category.name}</option>
+              ))}
             </select>
-            <input name="categoryName" type="hidden" />
           </div>
           
           <div className="mt-6 flex justify-end space-x-3">

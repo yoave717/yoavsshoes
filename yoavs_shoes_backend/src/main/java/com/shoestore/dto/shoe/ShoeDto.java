@@ -72,7 +72,7 @@ public class ShoeDto extends BaseCrudDto {
         private BigDecimal basePrice;
 
         @Schema(description = "Gender", required = true, example = "UNISEX")
-        @NotBlank(message = "Gender is required")
+        @NotNull(message = "Gender is required")
         private Shoe.Gender gender;
 
         @Schema(description = "Brand ID", required = true, example = "1")

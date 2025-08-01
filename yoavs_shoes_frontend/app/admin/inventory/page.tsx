@@ -7,8 +7,8 @@ import AddSizeModal from '@/components/admin/inventory/AddSizeModal';
 import AddShoeModal from '@/components/admin/inventory/AddShoeModal';
 import AddModelModal from '@/components/admin/inventory/AddModelModal';
 import InventoryTable from '@/components/admin/inventory/InventoryTable';
-import { useShoesForInventory } from '@hooks';
-import { ShoeInventoryView, ExtendedShoe, ExtendedShoeModel, ShoeFilters, Brand, Category} from '@types';
+import { useCreateShoe, useShoesForInventory } from '@hooks';
+import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters, Brand, Category, CreateShoeRequest} from '@types';
 import { useShoeStats } from '@/lib/hooks/shoes/useShoes';
 
 export default function InventoryPage() {
@@ -43,7 +43,7 @@ export default function InventoryPage() {
 
   const { data: stats, isLoading: isStatsLoading, error: statsError } = useShoeStats();
 
-
+  const { mutate: createShoe } = useCreateShoe();
 
   // Handle pagination
   const handlePageChange = (newPage: number) => {
@@ -59,19 +59,9 @@ export default function InventoryPage() {
     return () => clearTimeout(timeoutId);
   }, [searchTerm, selectedCategory]);
 
-  const handleAddShoe = (shoeData: any) => {
-    const newShoe: ExtendedShoe = {
-      id: Date.now(),
-      name: shoeData.name,
-      basePrice: parseFloat(shoeData.basePrice),
-      gender: shoeData.gender,
-      brand: { id: parseInt(shoeData.brandId), name: shoeData.brandName },
-      category: { id: parseInt(shoeData.categoryId), name: shoeData.categoryName },
-      models: [],
-      totalStock: 0,
-      totalModels: 0
-    };
-
+  const handleAddShoe = (shoeData: CreateShoeRequest) => {
+    
+    createShoe(shoeData);
     // In a real app, this would trigger a mutation and invalidate queries
     setShowAddShoeModal(false);
   };

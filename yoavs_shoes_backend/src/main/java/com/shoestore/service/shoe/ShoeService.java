@@ -20,7 +20,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-@Transactional(readOnly = true)
+@Transactional
 public class ShoeService extends BaseService<Shoe, Long, ShoeRepository> {
 
     private final ShoeRepository shoeRepository;
@@ -115,25 +115,7 @@ public class ShoeService extends BaseService<Shoe, Long, ShoeRepository> {
     public Shoe create(Shoe shoe) {
         log.debug("Creating new shoe: {}", shoe.getName());
         
-        // Validate brand exists and is active
-        if (shoe.getBrand() != null && shoe.getBrand().getId() != null) {
-            Brand brand = brandRepository.findById(shoe.getBrand().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Brand not found"));
-            if (!brand.getIsActive()) {
-                throw new IllegalArgumentException("Cannot create shoe with inactive brand");
-            }
-            shoe.setBrand(brand);
-        }
-
-        // Validate category exists and is active
-        if (shoe.getCategory() != null && shoe.getCategory().getId() != null) {
-            ShoeCategory category = categoryRepository.findById(shoe.getCategory().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
-            if (!category.getIsActive()) {
-                throw new IllegalArgumentException("Cannot create shoe with inactive category");
-            }
-            shoe.setCategory(category);
-        }
+        
 
         shoe.setIsActive(true);
         return super.create(shoe);

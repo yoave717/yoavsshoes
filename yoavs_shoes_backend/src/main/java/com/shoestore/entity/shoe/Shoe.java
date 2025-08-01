@@ -32,20 +32,33 @@ public class Shoe extends BaseEntity {
     }
 
     /**
+     * The ID of the brand that owns this shoe
+     */
+    @Column(name = "brand_id", nullable = false)
+    @NotNull(message = "Brand ID is required")
+    private Long brandId;
+
+    /**
      * Brand of the shoe
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "brand_id", nullable = false)
-    @NotNull(message = "Brand is required")
+    @JoinColumn(name = "brand_id", updatable = false, insertable = false)
     @ToString.Exclude
     private Brand brand;
+
+    /**
+     * The ID of the category this shoe belongs to
+     */
+    @Column(name = "category_id", nullable = false)
+    @NotNull(message = "Category ID is required")
+    private Long categoryId;
+
 
     /**
      * Category of the shoe
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", nullable = false)
-    @NotNull(message = "Category is required")
+    @JoinColumn(name = "category_id", updatable = false, insertable = false)
     @ToString.Exclude
     private ShoeCategory category;
 

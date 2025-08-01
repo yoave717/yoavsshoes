@@ -77,9 +77,10 @@ public class ShoeMapper implements BaseCrudMapper<Shoe, ShoeDto,
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .basePrice(dto.getBasePrice())
+                .brandId(dto.getBrandId())
+                .categoryId(dto.getCategoryId())
                 .gender(dto.getGender())
                 .isActive(dto.getIsActive() != null ? dto.getIsActive() : true)
-                // Note: Brand and Category entities will be set in service layer using brandId and categoryId
                 .build();
     }
 

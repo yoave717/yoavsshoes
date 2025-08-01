@@ -1,5 +1,5 @@
 import api from './client';
-import { PageResponse, Shoe, ShoeFilters, ShoeInventoryView, ShoeModel, ShoesStats, StandardResponse } from '@types';
+import { CreateShoeRequest, PageResponse, Shoe, ShoeFilters, ShoeInventoryView, ShoeModel, ShoesStats, StandardResponse } from '@types';
 
 // Shoes API functions
 export const shoesApi = {
@@ -18,7 +18,7 @@ export const shoesApi = {
     return response.data.data;
   },
 
-  createShoe: async (shoe: Omit<Shoe, 'id'>) => {
+  createShoe: async (shoe: CreateShoeRequest) => {
     const response = await api.post<StandardResponse<Shoe>>('/shoes', shoe);
     return response.data.data;
   },

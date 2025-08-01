@@ -22,7 +22,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-@Transactional(readOnly = true)
+@Transactional
 public class ShoeModelService extends BaseService<ShoeModel, Long, ShoeModelRepository> {
 
     private final ShoeModelRepository shoeModelRepository;

@@ -1,5 +1,6 @@
 import { BaseType, PageFilter } from "./common";
 
+export type Gender = 'MEN' | 'WOMEN' | 'UNISEX';
 
 export interface ShoeInventory extends BaseType {
   shoeModelId: number;
@@ -9,6 +10,16 @@ export interface ShoeInventory extends BaseType {
   actualAvailableQuantity: number;
   inStock: boolean;
   available: boolean;
+}
+
+export interface CreateShoeRequest {
+  name: string;
+  description?: string;
+  basePrice: number;
+  gender: Gender;
+  brandId: number;
+  categoryId: number;
+  isActive?: boolean;
 }
 
 export interface ShoeModel extends BaseType {
@@ -41,7 +52,7 @@ export interface Category extends BaseType {
 export interface Shoe extends BaseType{
   name: string;
   basePrice: number;
-  gender: string;
+  gender: Gender;
   brand: Brand;
   category: Category;
 }
