@@ -4,8 +4,6 @@ import { useState, useMemo } from 'react';
 import {
   useAllOrders,
   useOrdersByStatus,
-  useUpdateOrderStatus,
-  useProcessOrder
 } from '@hooks';
 import { OrderStatus, Order } from '@types';
 import OrderCard from '../../../components/admin/orders/OrderCard';
@@ -23,8 +21,6 @@ export default function AdminOrdersPage() {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'ALL'>('ALL');
   const [page, setPage] = useState(0);
   const [size] = useState(20);
-
-  
 
   const {
     data: allOrdersData,
@@ -45,9 +41,6 @@ export default function AdminOrdersPage() {
     { enabled: selectedStatus !== 'ALL' }
   );
 
-  const updateOrderStatusMutation = useUpdateOrderStatus();
-  const processOrderMutation = useProcessOrder();
-
   const ordersData = selectedStatus === 'ALL' ? allOrdersData : statusOrdersData;
   const isLoading = selectedStatus === 'ALL' ? allOrdersLoading : statusOrdersLoading;
   const error = selectedStatus === 'ALL' ? allOrdersError : statusOrdersError;
@@ -55,14 +48,6 @@ export default function AdminOrdersPage() {
   
   const orders = useMemo(() => ordersData?.content || [], [ordersData]);
   const totalPages = useMemo(() => ordersData?.totalPages || 0, [ordersData]);
-
-  const handleStatusChange = (orderId: number, newStatus: OrderStatus) => {
-      updateOrderStatusMutation.mutate({ orderId, status: newStatus });
-  };
-
-  const handleProcessOrder = (orderId: number) => {
-      processOrderMutation.mutate(orderId);
-  };
 
   if (isLoading) {
     return (
@@ -142,10 +127,6 @@ export default function AdminOrdersPage() {
               <OrderCard
                 key={order.id}
                 order={order}
-                onStatusChange={handleStatusChange}
-                onProcessOrder={handleProcessOrder}
-                isUpdatingStatus={updateOrderStatusMutation.isPending}
-                isProcessing={processOrderMutation.isPending}
               />
             ))}
           </div>

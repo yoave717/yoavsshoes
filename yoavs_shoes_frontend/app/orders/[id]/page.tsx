@@ -3,8 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useOrderDetails, useCancelOrder } from '../../../lib/hooks';
-import { Order } from '../../../lib/types/order';
+import { useOrderDetails, useCancelOrder } from '@hooks';
 
 const ORDER_STATUS_CONFIG = {
   PENDING: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800', description: 'Your order is being processed' },
@@ -20,10 +19,9 @@ export default function OrderDetailsPage() {
   const router = useRouter();
   const orderId = Number(params.id);
   
-  const { data: orderResponse, isLoading, error } = useOrderDetails(orderId);
+  const { data: order, isLoading, error } = useOrderDetails(orderId);
   const cancelOrderMutation = useCancelOrder();
 
-  const order: Order | undefined = orderResponse?.data;
 
   const handleCancelOrder = async () => {
     if (confirm('Are you sure you want to cancel this order?')) {
@@ -224,16 +222,6 @@ export default function OrderDetailsPage() {
                 ))}
               </div>
             </div>
-
-            {/* Special Instructions */}
-            {order.specialInstructions && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Special Instructions</h2>
-                <p className="text-gray-700 bg-gray-50 p-4 rounded-md">
-                  {order.specialInstructions}
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Sidebar */}
