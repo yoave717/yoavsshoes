@@ -3,7 +3,7 @@
 import InventoryShoeRow from '@/components/admin/inventory/InventoryShoeRow';
 import { useDeleteShoeModel } from '@/lib/hooks/shoes/useDeleteShoeModel';
 import { useUpdateShoeInventory } from '@/lib/hooks/shoes/useShoes';
-import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters, ShoeModelInventoryView } from '@types';
+import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters } from '@types';
 
 interface InventoryTableProps {
   shoes: ShoeInventoryView[];
@@ -12,7 +12,6 @@ interface InventoryTableProps {
   page: number;
   onPageChange: (newPage: number) => void;
   onEditModel: (model: ExtendedShoeModel) => void;
-  onAddSize: (model: ShoeModelInventoryView) => void;
   onAddModel: (shoe: ShoeInventoryView) => void;
 }
 
@@ -23,7 +22,6 @@ export default function InventoryTable({
   page,
   onPageChange,
   onEditModel,
-  onAddSize,
   onAddModel
 }: InventoryTableProps) {
     const { mutate: updateInventory } = useUpdateShoeInventory();
@@ -75,7 +73,6 @@ export default function InventoryTable({
                 onRemoveSize={() => {}} // TODO: Implement with mutations
                 onEditModel={onEditModel}
                 onDeleteModel={(modelId) => handleModelDeletion(shoe.id, modelId)}
-                onAddSize={onAddSize}
                 onAddModel={onAddModel}
               />
             ))}

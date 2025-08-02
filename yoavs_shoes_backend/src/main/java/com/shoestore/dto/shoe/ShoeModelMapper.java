@@ -55,6 +55,7 @@ public class ShoeModelMapper implements BaseCrudMapper<ShoeModel, ShoeModelDto,
 
         return ShoeModelDto.builder()
                 .id(entity.getId())
+                .shoeId(entity.getShoeId())
                 .modelName(entity.getModelName())
                 .color(entity.getColor())
                 .material(entity.getMaterial())

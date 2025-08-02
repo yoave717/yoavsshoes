@@ -32,6 +32,9 @@ public class ShoeModelDto extends BaseCrudDto {
     private ShoeDto shoe;
 
     @JsonView(Views.Summary.class)
+    private Long shoeId;
+
+    @JsonView(Views.Summary.class)
     private String modelName;
 
     @JsonView(Views.Summary.class)

@@ -41,16 +41,17 @@ export interface CreateShoeInventoryRequest {
 }
 
 export interface ShoeModel extends BaseType {
+  shoeId: number;
   modelName: string;
   color: string;
   material?: string;
   sku: string;
   price: number;
-  imageUrl: string;
-  isActive: boolean;
+  imageUrl?: string;
+  isActive?: boolean;
   displayName: string;
   fullDisplayName: string;
-  shoe: Shoe;
+  shoe?: Shoe;
   availableSizes: ShoeInventory[];
 }
 

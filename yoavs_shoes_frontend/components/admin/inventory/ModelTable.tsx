@@ -1,22 +1,23 @@
 import { useState } from 'react';
 import SizeManagementCard from './SizeManagementCard';
 import React from 'react';
-import { ShoeModelInventoryView } from '@types';
+import { ShoeInventoryView, ShoeModelInventoryView } from '@types';
+import AddSizeModal from './AddSizeModal';
 
 interface ModelTableProps {
   models: ShoeModelInventoryView[];
+  shoe: ShoeInventoryView;
   onStockUpdate: (modelId: number, size: string, newQuantity: number) => void;
   onEditModel: (model: ShoeModelInventoryView) => void;
   onDeleteModel: (modelId: number) => void;
-  onAddSize: (model: ShoeModelInventoryView) => void;
 }
 
 export default function ModelTable({
   models,
+  shoe,
   onStockUpdate,
   onEditModel,
   onDeleteModel,
-  onAddSize
 }: ModelTableProps) {
   const [expandedModels, setExpandedModels] = useState<Set<number>>(new Set());
 
@@ -123,12 +124,12 @@ export default function ModelTable({
                         )}
                       </div>
                       <div className="flex space-x-2 text-xs">
-                        <button
-                          onClick={() => onAddSize(model)}
-                          className="text-indigo-600 hover:text-indigo-900 font-medium"
-                        >
-                          + Size
-                        </button>
+                        <AddSizeModal
+                          trigger={<button className="text-indigo-600 hover:text-indigo-900 font-medium">+ Size</button>}
+                          selectedModel={model}
+                          selectedShoe={shoe}
+                         
+                        />
                         <button
                           onClick={() => toggleModelExpansion(model.id)}
                           className="text-gray-600 hover:text-gray-900 font-medium"
