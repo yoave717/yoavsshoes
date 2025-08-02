@@ -1,6 +1,4 @@
-import { ShoeModel } from './product';
-import { OrderUser, ShippingAddress } from './user';
-import { StandardResponse, PageResponse } from './common';
+import { ShoeModel, OrderUser, ShippingAddress, PageResponse} from '@types';
 
 export interface OrderItem {
   id: number;
@@ -49,11 +47,11 @@ export interface OrderResponse {
   message?: string;
 }
 
-export type OrdersPageResponse = StandardResponse<PageResponse<Order>>;
+export type OrdersPageResponse = PageResponse<Order>;
 
-export type OrderStatsResponse = StandardResponse<{
+export type OrderStatsResponse = {
   totalOrders: number;
   pendingOrders: number;
   totalRevenue: number;
   averageOrderValue: number;
-}>;
+};

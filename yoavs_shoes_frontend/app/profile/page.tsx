@@ -104,7 +104,7 @@ export default function Profile() {
     );
   }
 
-  const orders = ordersData?.data?.content || [];
+  const orders = ordersData?.content || [];
   const groupedOrders = orders.reduce((acc: Record<string, Order[]>, order: Order) => {
     if (!acc[order.status]) {
       acc[order.status] = [];

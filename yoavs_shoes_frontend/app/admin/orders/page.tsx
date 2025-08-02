@@ -1,15 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { useState, useMemo } from 'react';
 import {
   useAllOrders,
   useOrdersByStatus,
   useUpdateOrderStatus,
   useProcessOrder
-} from '../../../lib/hooks/orders';
-import { OrderStatus, Order, OrderItem } from '../../../lib/types/order';
+} from '@hooks';
+import { OrderStatus, Order } from '@types';
+import OrderCard from '../../../components/admin/orders/OrderCard';
 
 const ORDER_STATUS_CONFIG = {
   PENDING: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800', badgeColor: 'bg-yellow-500' },
@@ -24,6 +23,8 @@ export default function AdminOrdersPage() {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'ALL'>('ALL');
   const [page, setPage] = useState(0);
   const [size] = useState(20);
+
+  
 
   const {
     data: allOrdersData,
@@ -51,20 +52,16 @@ export default function AdminOrdersPage() {
   const isLoading = selectedStatus === 'ALL' ? allOrdersLoading : statusOrdersLoading;
   const error = selectedStatus === 'ALL' ? allOrdersError : statusOrdersError;
 
-  const handleStatusChange = async (orderId: number, newStatus: OrderStatus) => {
-    try {
-      await updateOrderStatusMutation.mutateAsync({ orderId, status: newStatus });
-    } catch (error) {
-      console.error('Failed to update order status:', error);
-    }
+  
+  const orders = useMemo(() => ordersData?.content || [], [ordersData]);
+  const totalPages = useMemo(() => ordersData?.totalPages || 0, [ordersData]);
+
+  const handleStatusChange = (orderId: number, newStatus: OrderStatus) => {
+      updateOrderStatusMutation.mutate({ orderId, status: newStatus });
   };
 
-  const handleProcessOrder = async (orderId: number) => {
-    try {
-      await processOrderMutation.mutateAsync(orderId);
-    } catch (error) {
-      console.error('Failed to process order:', error);
-    }
+  const handleProcessOrder = (orderId: number) => {
+      processOrderMutation.mutate(orderId);
   };
 
   if (isLoading) {
@@ -86,25 +83,15 @@ export default function AdminOrdersPage() {
     );
   }
 
-  const orders = ordersData?.data?.content || [];
-  const totalPages = ordersData?.data?.totalPages || 0;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
+      <div >
           <h1 className="text-2xl font-bold text-gray-900">Order Management</h1>
           <p className="mt-1 text-gray-600">
             Manage customer orders, update statuses, and process shipments
           </p>
-        </div>
-        <Link
-          href="/admin"
-          className="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
-        >
-          Back to Dashboard
-        </Link>
       </div>
 
       {/* Status Filter */}
@@ -152,128 +139,14 @@ export default function AdminOrdersPage() {
         ) : (
           <div className="divide-y divide-gray-200">
             {orders.map((order: Order) => (
-              <div key={order.id} className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-4">
-                    <div>
-                      <h4 className="text-lg font-medium text-gray-900">
-                        Order #{order.orderNumber}
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        {new Date(order.orderDate).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG]?.color}`}>
-                      {ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG]?.label}
-                    </span>
-                    <span className="text-lg font-bold text-gray-900">
-                      ${order.totalAmount.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Customer Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <h5 className="text-sm font-medium text-gray-900 mb-1">Customer</h5>
-                    <p className="text-sm text-gray-600">
-                      {order.user?.firstName} {order.user?.lastName}
-                    </p>
-                    <p className="text-sm text-gray-600">{order.user?.email}</p>
-                  </div>
-                  <div>
-                    <h5 className="text-sm font-medium text-gray-900 mb-1">Shipping Address</h5>
-                    <p className="text-sm text-gray-600">
-                      {order.shippingAddress?.addressLine1}
-                      {order.shippingAddress?.addressLine2 && (
-                        <>, {order.shippingAddress.addressLine2}</>
-                      )}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {order.shippingAddress?.city}, {order.shippingAddress?.state} {order.shippingAddress?.postalCode}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Order Items */}
-                <div className="mb-4">
-                  <h5 className="text-sm font-medium text-gray-900 mb-2">Items ({order.orderItems?.length || 0})</h5>
-                  <div className="space-y-2">
-                    {order.orderItems?.slice(0, 3).map((item: OrderItem, index: number) => (
-                      <div key={item.id || index} className="flex items-center space-x-3">
-                        {item.shoeModel?.imageUrl && (
-                          <Image
-                            src={item.shoeModel.imageUrl}
-                            alt={item.shoeModel.modelName}
-                            width={40}
-                            height={40}
-                            className="w-10 h-10 object-cover rounded"
-                          />
-                        )}
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">
-                            {item.shoeModel?.shoe?.name} - {item.shoeModel?.modelName}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Size: {item.size}, Qty: {item.quantity} × ${item.unitPrice?.toFixed(2)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                    {(order.orderItems?.length || 0) > 3 && (
-                      <p className="text-sm text-gray-500">
-                        +{(order.orderItems?.length || 0) - 3} more items
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <div className="flex items-center space-x-2">
-                    <Link
-                      href={`/orders/${order.id}`}
-                      className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    {/* Process Order Button */}
-                    {order.status === 'PENDING' && (
-                      <button
-                        onClick={() => handleProcessOrder(order.id)}
-                        disabled={processOrderMutation.isPending}
-                        className="bg-green-600 text-white px-3 py-1 rounded text-sm font-medium hover:bg-green-700 disabled:opacity-50"
-                      >
-                        {processOrderMutation.isPending ? 'Processing...' : 'Process Order'}
-                      </button>
-                    )}
-
-                    {/* Status Change Dropdown */}
-                    <select
-                      value={order.status}
-                      onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
-                      disabled={updateOrderStatusMutation.isPending}
-                      className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    >
-                      {Object.entries(ORDER_STATUS_CONFIG).map(([status, config]) => (
-                        <option key={status} value={status}>
-                          {config.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
+              <OrderCard
+                key={order.id}
+                order={order}
+                onStatusChange={handleStatusChange}
+                onProcessOrder={handleProcessOrder}
+                isUpdatingStatus={updateOrderStatusMutation.isPending}
+                isProcessing={processOrderMutation.isPending}
+              />
             ))}
           </div>
         )}
@@ -306,3 +179,4 @@ export default function AdminOrdersPage() {
     </div>
   );
 }
+                

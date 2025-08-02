@@ -1,12 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createOrder, getMyOrders, getOrderById, cancelOrder } from '../../api/orders';
-import { StandardResponse } from '../../types/common';
 import { 
   CreateOrderRequest,
   OrderResponse,
-  OrdersPageResponse,
   Order
-} from '../../types/order';
+} from '@types';
 
 export const useCreateOrder = () => {
   return useMutation<OrderResponse, Error, CreateOrderRequest>({
@@ -21,7 +19,7 @@ export const useCreateOrder = () => {
 };
 
 export const useMyOrders = (page = 0, size = 20) => {
-  return useQuery<OrdersPageResponse>({
+  return useQuery({
     queryKey: ['orders', 'my-orders', page, size],
     queryFn: () => getMyOrders(page, size),
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -29,7 +27,7 @@ export const useMyOrders = (page = 0, size = 20) => {
 };
 
 export const useOrderById = (orderId: number) => {
-  return useQuery<StandardResponse<Order>>({
+  return useQuery({
     queryKey: ['orders', orderId],
     queryFn: () => getOrderById(orderId),
     enabled: !!orderId,
@@ -38,7 +36,7 @@ export const useOrderById = (orderId: number) => {
 };
 
 export const useCancelOrder = () => {
-  return useMutation<StandardResponse<Order>, Error, number>({
+  return useMutation<Order, Error, number>({
     mutationFn: cancelOrder,
     onSuccess: (data) => {
       console.log('Order cancelled successfully:', data);

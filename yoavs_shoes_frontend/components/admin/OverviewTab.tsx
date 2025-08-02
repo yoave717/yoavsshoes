@@ -27,7 +27,7 @@ export default function OverviewTab() {
                   <dd className="text-lg font-medium text-gray-900">
                     {orderStatsLoading
                       ? '...'
-                      : orderStats?.data?.totalOrders || 0}
+                      : orderStats?.totalOrders || 0}
                   </dd>
                 </dl>
               </div>
@@ -51,7 +51,7 @@ export default function OverviewTab() {
                   <dd className="text-lg font-medium text-gray-900">
                     {orderStatsLoading
                       ? '...'
-                      : orderStats?.data?.pendingOrders || 0}
+                      : orderStats?.pendingOrders || 0}
                   </dd>
                 </dl>
               </div>
@@ -101,7 +101,7 @@ export default function OverviewTab() {
                     {orderStatsLoading
                       ? '...'
                       : (
-                          orderStats?.data?.totalRevenue || 0
+                          orderStats?.totalRevenue || 0
                         ).toLocaleString()}
                   </dd>
                 </dl>

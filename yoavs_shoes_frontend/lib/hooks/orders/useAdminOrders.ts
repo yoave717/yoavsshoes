@@ -7,12 +7,13 @@ import {
   getUserOrders,
   getOrderStats
 } from '../../api/orders';
-import { StandardResponse } from '../../types/common';
 import { 
   OrderStatus, 
   OrderStatsResponse,
-  Order
+  Order,
+  OrdersPageResponse
 } from '../../types/order';
+import { useToast } from '@/components/Toast';
 
 // Admin Order Management Hooks
 export const useAllOrders = (page = 0, size = 20, sortBy = 'id', sortDir = 'desc') => {
@@ -47,23 +48,59 @@ export const useUserOrders = (userId: number, page = 0, size = 20) => {
 
 export const useUpdateOrderStatus = () => {
   const queryClient = useQueryClient();
-  
-  return useMutation<StandardResponse<Order>, Error, { orderId: number; status: OrderStatus }>({
+  const {showToast} = useToast();
+
+  return useMutation<Order, Error, { orderId: number; status: OrderStatus }>({
     mutationFn: ({ orderId, status }) => updateOrderStatus(orderId, status),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      showToast('Order status updated successfully');
       // Invalidate all order-related queries to refresh data
+
+      const queries = queryClient.getQueriesData<
+              OrdersPageResponse
+            >({ queryKey: ['orders', 'admin'] });
+            queries.forEach(([queryKey, oldData]) => {
+              if (!oldData) return;
+
+              queryClient.setQueryData<OrdersPageResponse>(queryKey, {
+                ...oldData,
+                content: oldData.content.map(order => {
+                  if (order.id === variables.orderId) {
+                    return {
+                      ...order,
+                      status: variables.status,
+                    };
+                  }
+                  return order;
+                }),
+              });
+            });
+
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+    onError: (error) => {
+      console.log('Error updating order status:', error);
+      
+      showToast(`Error updating order status: ${error.message}`, 'error');
     },
   });
 };
 
 export const useProcessOrder = () => {
   const queryClient = useQueryClient();
-  
-  return useMutation<StandardResponse<Order>, Error, number>({
+  const { showToast } = useToast();
+
+  return useMutation<Order, Error, number>({
     mutationFn: (orderId: number) => processOrder(orderId),
     onSuccess: () => {
+      showToast('Order status updated successfully');
+      // Invalidate all order-related queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+    onError: (error) => {
+      console.log('Error updating order status:', error);
+      
+      showToast(`Error updating order status: ${error.message}`, 'error');
     },
   });
 };
