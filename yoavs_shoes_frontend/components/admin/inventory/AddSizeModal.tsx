@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ShoeInventoryView, ShoeModelInventoryView } from '@types';
-import { useCreateShoeInventory } from '@/lib/hooks/shoes/useShoes';
+import { useCreateShoeInventory } from '@hooks';
 import { useModal } from '@contexts';
 
 interface AddSizeModalProps {

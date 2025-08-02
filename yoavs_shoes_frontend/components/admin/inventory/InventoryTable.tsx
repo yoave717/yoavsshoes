@@ -1,8 +1,7 @@
 'use client';
 
 import InventoryShoeRow from '@/components/admin/inventory/InventoryShoeRow';
-import { useDeleteShoeModel } from '@/lib/hooks/shoes/useDeleteShoeModel';
-import { useUpdateShoeInventory } from '@/lib/hooks/shoes/useShoes';
+import { useUpdateShoeInventory, useDeleteShoeModel } from '@hooks';
 import { ShoeInventoryView, ShoeFilters } from '@types';
 
 interface InventoryTableProps {

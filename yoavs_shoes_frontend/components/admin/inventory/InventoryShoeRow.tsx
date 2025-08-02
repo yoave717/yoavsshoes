@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import React from 'react';
 import { ShoeInventoryView } from '@/lib/types';
-import { useShoeModels } from '@/lib/hooks/shoes/useShoes';
+import { useShoeModels } from '@hooks';
 import ModelTable from './ModelTable';
 import { ModalDialog } from '@/components/ModalDialog';
 import ModelDetailsModal from './ModelDetailsModal';
