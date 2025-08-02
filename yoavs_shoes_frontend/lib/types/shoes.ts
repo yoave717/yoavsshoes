@@ -33,6 +33,15 @@ export interface CreateShoeModelRequest {
   isActive?: boolean;
 }
 
+export interface UpdateShoeModelRequest {
+  modelName?: string;
+  color?: string;
+  material?: string;
+  price?: number;
+  imageUrl?: string;
+  isActive?: boolean;
+}
+
 export interface CreateShoeInventoryRequest {
   shoeModelId: number;
   size: string;

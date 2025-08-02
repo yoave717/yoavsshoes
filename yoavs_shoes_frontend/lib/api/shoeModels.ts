@@ -1,4 +1,4 @@
-import { CreateShoeModelRequest, ShoeModel, StandardResponse } from "../types";
+import { CreateShoeModelRequest, ShoeModel, StandardResponse, UpdateShoeModelRequest } from "../types";
 import api from "./client";
 
 
@@ -9,6 +9,11 @@ export const shoeModelsApi = {
     },
 
     deleteShoeModel: async (id: number) => {
-        await api.delete<void>(`/products/${id}`);
+        return await api.delete<void>(`/products/${id}`);
+    },
+
+    updateShoeModel: async (id: number, shoeModel: UpdateShoeModelRequest) => {
+        const response = await api.patch<StandardResponse<ShoeModel>>(`/products/${id}`, shoeModel);
+        return response.data.data;
     }
 }

@@ -77,7 +77,6 @@ export default function InventoryShoeRow({
           </button>}>
             <ModelDetailsModal
               selectedShoe={shoe}
-              shoes={[shoe]}
             />
           </ModalDialog>
         </td>

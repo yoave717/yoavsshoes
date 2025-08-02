@@ -108,4 +108,22 @@ public class ShoeModelMapper implements BaseCrudMapper<ShoeModel, ShoeModelDto,
                 .build();
     }
 
+    @Override
+    public ShoeModel toEntity(ShoeModelDto.UpdateShoeModelDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        ShoeModel entity = ShoeModel.builder()
+                .modelName(dto.getModelName())
+                .color(dto.getColor())
+                .material(dto.getMaterial())
+                .price(dto.getPrice())
+                .imageUrl(dto.getImageUrl())
+                .isActive(dto.getIsActive() != null ? dto.getIsActive() : true)
+                .build();
+
+        return entity;
+    }
+
 }

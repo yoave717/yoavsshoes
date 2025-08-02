@@ -41,7 +41,7 @@ export default function InventoryPage() {
   } = useShoesForInventory(filters);
 
   const shoes = useMemo(
-    () => shoesResponse?.data?.content || [],
+    () => shoesResponse?.content || [],
     [shoesResponse]
   );
 

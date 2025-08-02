@@ -35,7 +35,7 @@ export const shoesApi = {
   // For inventory management - get shoes with their models and stock
   getShoesForInventory: async (filters: ShoeFilters = {}) => {
     const response = await api.get<StandardResponse<PageResponse<ShoeInventoryView>>>('/shoes/with-model-count', { params: filters });
-    return response.data;
+    return response.data.data;
   },
 
   getShoeStats: async () => {

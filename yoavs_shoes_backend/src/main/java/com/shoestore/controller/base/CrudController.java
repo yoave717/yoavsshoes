@@ -205,10 +205,9 @@ public abstract class CrudController<
 
         log.debug("Partially updating {} with id: {} - {}", entityName, id, updateDto);
 
-        // Use the getCachedEntityOrFetch helper method for optimal caching
-        T existingEntity = getEntityWithCache(id);
-        
-        T updatedEntity = service.save(existingEntity);
+
+        T updateEntity = mapper.toEntity(updateDto);
+        T updatedEntity = service.update(id, updateEntity);
         ResponseDto responseDto = mapper.toDto(updatedEntity);
 
         logEntityAction("PATCH", entityName, id.toString(),

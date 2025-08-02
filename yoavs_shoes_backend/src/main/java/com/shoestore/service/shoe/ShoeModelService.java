@@ -142,8 +142,26 @@ public class ShoeModelService extends BaseService<ShoeModel, Long, ShoeModelRepo
 
     @Override
     protected void updateEntityFields(ShoeModel existingEntity, ShoeModel newEntity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateEntityFields'");
+        log.debug("Updating ShoeModel fields for: {}", existingEntity.getId());
+
+        if (newEntity.getModelName() != null) {
+            existingEntity.setModelName(newEntity.getModelName());
+        }
+        if (newEntity.getColor() != null) {
+            existingEntity.setColor(newEntity.getColor());
+        }
+        if (newEntity.getMaterial() != null) {
+            existingEntity.setMaterial(newEntity.getMaterial());
+        }
+        if (newEntity.getPrice() != null) {
+            existingEntity.setPrice(newEntity.getPrice());
+        }
+        if (newEntity.getImageUrl() != null) {
+            existingEntity.setImageUrl(newEntity.getImageUrl());
+        }
+        if (newEntity.getIsActive() != null) {
+            existingEntity.setIsActive(newEntity.getIsActive());
+        }
     }
 
     /**
