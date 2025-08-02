@@ -12,6 +12,11 @@ export interface ShoeInventory extends BaseType {
   available: boolean;
 }
 
+export interface UpdateShoeInventoryRequest { 
+  quantityAvailable: number;
+  quantityReserved?: number;
+}
+
 export interface CreateShoeRequest {
   name: string;
   description?: string;

@@ -5,21 +5,20 @@ import { ShoeInventoryView, ShoeModelInventoryView } from '@types';
 import AddSizeModal from './AddSizeModal';
 import { ModalDialog } from '@/components/ModalDialog';
 import ModelDetailsModal from './ModelDetailsModal';
+import { useDeleteShoeModel } from '@hooks';
 
 interface ModelTableProps {
   models: ShoeModelInventoryView[];
   shoe: ShoeInventoryView;
-  onStockUpdate: (modelId: number, size: string, newQuantity: number) => void;
-  onDeleteModel: (modelId: number) => void;
 }
 
 export default function ModelTable({
   models,
   shoe,
-  onStockUpdate,
-  onDeleteModel,
 }: ModelTableProps) {
+  
   const [expandedModels, setExpandedModels] = useState<Set<number>>(new Set());
+  const { mutate: deleteShoeModel } = useDeleteShoeModel();
 
   const getStockStatus = (totalStock: number) => {
     if (totalStock === 0) return { label: 'Out of Stock', color: 'text-red-600 bg-red-100' };
@@ -38,6 +37,12 @@ export default function ModelTable({
       return newSet;
     });
   };
+    const handleModelDeletion = (modelId: number) => {
+        const confirmed = window.confirm('Are you sure you want to delete this shoe model? This action cannot be undone.');
+        if (confirmed) {
+            deleteShoeModel({ shoeId: shoe.id, shoeModelId: modelId });
+        }
+    };
 
   return (
     <div className="mt-4 bg-white rounded-lg shadow overflow-hidden">
@@ -161,7 +166,7 @@ export default function ModelTable({
                       />
                     </ModalDialog>
                     <button
-                      onClick={() => onDeleteModel(model.id)}
+                      onClick={() => handleModelDeletion(model.id)}
                       className="text-red-600 hover:text-red-900 text-xs"
                     >
                       Delete
@@ -180,7 +185,7 @@ export default function ModelTable({
                             <SizeManagementCard
                               key={size.id}
                               size={size}
-                              onStockUpdate={onStockUpdate}
+                              model={model}
                             />
                           ))}
                         </div>

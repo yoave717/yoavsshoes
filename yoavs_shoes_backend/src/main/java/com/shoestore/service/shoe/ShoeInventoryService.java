@@ -30,8 +30,13 @@ public class ShoeInventoryService extends BaseService<ShoeInventory, Long, ShoeI
 
     @Override
     protected void updateEntityFields(ShoeInventory existingEntity, ShoeInventory newEntity) {
-        existingEntity.setQuantityAvailable(newEntity.getQuantityAvailable());
-        existingEntity.setQuantityReserved(newEntity.getQuantityReserved());
+        if (newEntity.getQuantityAvailable() != null) {
+            existingEntity.setQuantityAvailable(newEntity.getQuantityAvailable());
+        }
+        
+        if (newEntity.getQuantityReserved() != null) {
+            existingEntity.setQuantityReserved(newEntity.getQuantityReserved());
+        }
     }
 
 

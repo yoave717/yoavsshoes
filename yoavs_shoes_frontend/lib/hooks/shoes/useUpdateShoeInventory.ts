@@ -1,52 +1,94 @@
-import { shoeInventoryApi } from "@api";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { ShoeModel } from "@types";
+import { useToast } from '@/components/Toast';
+import { shoeInventoryApi } from '@api';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import {
+  PageResponse,
+  ShoeInventoryView,
+  ShoeModelInventoryView,
+  UpdateShoeInventoryRequest,
+} from '@types';
 
 export const useUpdateShoeInventory = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   return useMutation({
-    mutationFn: ({modelId, size, quantityAvailable, quantityReserved, shoeId }: { modelId: number; size: string; quantityAvailable: number; quantityReserved?: number; shoeId: number }) =>
-      shoeInventoryApi.updateInventory(modelId, size, quantityAvailable, quantityReserved),
-    onMutate: async (variables) => {
-      // Cancel outgoing refetches for the specific shoe
-      await queryClient.cancelQueries({ queryKey: ['shoe-models', variables.shoeId] });
-      
-      // Snapshot previous value
-      const previousData = queryClient.getQueryData(['shoe-models', variables.shoeId]);
-      
-      // Optimistically update cache for the specific shoe
-      queryClient.setQueryData(['shoe-models', variables.shoeId], (old: ShoeModel[]) => {
-        if (!old) return old;
-        return old.map((model) => {
-          if (model.id === variables.modelId) {
-            return {
-              ...model,
-              availableSizes: model.availableSizes.map((sizeItem) => 
-                sizeItem.size === variables.size 
-                  ? { ...sizeItem, quantityAvailable: variables.quantityAvailable }
-                  : sizeItem
-              )
-            };
-          }
-          return model;
-        });
-      });
-      queryClient.invalidateQueries({ queryKey: ['shoe-stats'] });
+    mutationFn: ({
+      inventoryId,
+      modelId,
+      shoeId,
+      quantityAvailable,
+      quantityReserved,
+    }: UpdateShoeInventoryRequest & {
+      inventoryId: number;
+      modelId: number;
+      shoeId: number;
+    }) =>
+      shoeInventoryApi.updateInventory(inventoryId, {
+        quantityAvailable,
+        quantityReserved,
+      }),
+    onSuccess: async (data, variables) => {
+      const oldQuantity =
+        queryClient
+          .getQueryData<ShoeModelInventoryView[]>([
+            'shoe-models',
+            variables.shoeId,
+          ])
+          ?.find(model => model.id === variables.modelId)
+          ?.availableSizes.find(size => size.id === variables.inventoryId)
+          ?.quantityAvailable || 0;
 
-      return { previousData, shoeId: variables.shoeId };
+      // Optimistically update cache for the specific shoe
+      queryClient.setQueryData(
+        ['shoe-models', variables.shoeId],
+        (old: ShoeModelInventoryView[]) => {
+          if (!old) return old;
+          return old.map(model => {
+            if (model.id === variables.modelId) {
+              return {
+                ...model,
+                availableSizes: model.availableSizes.map(sizeItem =>
+                  sizeItem.id === variables.inventoryId
+                    ? {
+                        ...sizeItem,
+                        quantityAvailable: variables.quantityAvailable,
+                      }
+                    : sizeItem
+                ),
+              };
+            }
+            return model;
+          });
+        }
+      );
+
+      const queries = queryClient.getQueriesData<
+        PageResponse<ShoeInventoryView>
+      >({ queryKey: ['shoes', 'inventory'] });
+      queries.forEach(([queryKey, oldData]) => {
+        if (!oldData) return;
+
+        queryClient.setQueryData<PageResponse<ShoeInventoryView>>(queryKey, {
+          ...oldData,
+          content: oldData.content.map(shoe => {
+            if (shoe.id === variables.shoeId) {
+              return {
+                ...shoe,
+                totalStock:
+                  shoe.totalStock - oldQuantity + variables.quantityAvailable,
+              };
+            }
+            return shoe;
+          }),
+        });
+        console.log('Updating shoe inventory cache', oldData, variables);
+      });
+
+      return queryClient.invalidateQueries({ queryKey: ['shoe-stats'] });
     },
-    onError: (err, variables, context) => {
-      // Rollback on error
-      if (context?.previousData && context?.shoeId) {
-        queryClient.setQueryData(['shoe-models', context.shoeId], context.previousData);
-      }
+    onError: () => {
+      showToast('Error updating shoe inventory', 'error');
     },
-    onSettled: (data, error, variables) => {
-      // Always refetch after error or success
-      queryClient.invalidateQueries({ queryKey: ['shoe-models', variables.shoeId] });
-      queryClient.invalidateQueries({ queryKey: ['shoes', 'inventory'] });
-      queryClient.invalidateQueries({ queryKey: ['shoe-stats'] });
-    }
   });
-}
+};

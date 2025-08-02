@@ -8,14 +8,10 @@ import ModelDetailsModal from './ModelDetailsModal';
 
 interface InventoryShoeRowProps {
   shoe: ShoeInventoryView;
-  onStockUpdate: (modelId: number, size: string, newQuantity: number) => void;
-  onDeleteModel: (modelId: number) => void;
 }
 
 export default function InventoryShoeRow({
   shoe,
-  onStockUpdate,
-  onDeleteModel,
 }: InventoryShoeRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -92,8 +88,6 @@ export default function InventoryShoeRow({
                 <ModelTable
                   models={models}
                   shoe={shoe}
-                  onStockUpdate={onStockUpdate}
-                  onDeleteModel={onDeleteModel}
                 />
               ) : 
                 <div className="text-gray-500">Loading models...</div>}

@@ -1,10 +1,10 @@
-import { CreateShoeInventoryRequest, ShoeInventory, StandardResponse } from "../types";
+import { CreateShoeInventoryRequest, ShoeInventory, StandardResponse, UpdateShoeInventoryRequest } from "../types";
 import api from "./client";
 
 export const shoeInventoryApi = {
 
-    updateInventory: async (modelId: number, size: string, quantityAvailable: number, quantityReserved?: number) => {
-        const response = await api.put<StandardResponse<ShoeInventory>>(`/inventory/model/${modelId}/size/${size}`, { quantityAvailable, quantityReserved });
+    updateInventory: async (id: number, data: UpdateShoeInventoryRequest) => {
+        const response = await api.patch<StandardResponse<ShoeInventory>>(`/inventory/${id}`, data);
         return response.data.data;
     },
 

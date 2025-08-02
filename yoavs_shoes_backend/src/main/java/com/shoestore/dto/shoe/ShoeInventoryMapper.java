@@ -24,6 +24,7 @@ public class ShoeInventoryMapper implements BaseCrudMapper<ShoeInventory, ShoeIn
     }
 
     return ShoeInventoryDto.builder()
+            .id(entity.getId())
             .size(entity.getSize())
             .quantityAvailable(entity.getQuantityAvailable())
             .quantityReserved(entity.getQuantityReserved())
