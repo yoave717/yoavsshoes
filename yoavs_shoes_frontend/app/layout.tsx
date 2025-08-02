@@ -5,6 +5,7 @@ import Navigation from '../components/Navigation';
 import QueryProvider from '../lib/query-provider';
 import { CartProvider } from '../lib/cart-context';
 import { UserProvider } from '@/lib/contexts/UserContext';
+import { ToastProvider } from '@/components/Toast';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -33,12 +34,14 @@ export default function RootLayout({
       >
         <QueryProvider>
           <UserProvider>
-              <CartProvider>
+            <CartProvider>
+              <ToastProvider>
                 <Navigation />
                 {children}
-              </CartProvider>
-            </UserProvider>
-          </QueryProvider>
+              </ToastProvider>
+            </CartProvider>
+          </UserProvider>
+        </QueryProvider>
       </body>
     </html>
   );

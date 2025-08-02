@@ -1,6 +1,7 @@
 'use client';
 
 import InventoryShoeRow from '@/components/admin/inventory/InventoryShoeRow';
+import { useDeleteShoeModel } from '@/lib/hooks/shoes/useDeleteShoeModel';
 import { useUpdateShoeInventory } from '@/lib/hooks/shoes/useShoes';
 import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters, ShoeModelInventoryView } from '@types';
 
@@ -26,10 +27,18 @@ export default function InventoryTable({
   onAddModel
 }: InventoryTableProps) {
     const { mutate: updateInventory } = useUpdateShoeInventory();
-
+    const { mutate: deleteShoeModel } = useDeleteShoeModel();
     const handleStockUpdate = (shoeId: number, modelId: number, size: string, newQuantity: number) => {
         updateInventory({ shoeId, modelId, size, quantityAvailable: newQuantity });
     };
+
+    const handleModelDeletion = (shoeId: number, modelId: number) => {
+        const confirmed = window.confirm('Are you sure you want to delete this shoe model? This action cannot be undone.');
+        if (confirmed) {
+            deleteShoeModel({ shoeId, shoeModelId: modelId });
+        }
+    };
+
   return (
     <div className="bg-white shadow rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
@@ -65,7 +74,7 @@ export default function InventoryTable({
                 onStockUpdate={(modelId, size, newQuantity) => handleStockUpdate(shoe.id, modelId, size, newQuantity)}
                 onRemoveSize={() => {}} // TODO: Implement with mutations
                 onEditModel={onEditModel}
-                onDeleteModel={() => {}} // TODO: Implement with mutations
+                onDeleteModel={(modelId) => handleModelDeletion(shoe.id, modelId)}
                 onAddSize={onAddSize}
                 onAddModel={onAddModel}
               />

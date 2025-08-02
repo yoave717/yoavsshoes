@@ -6,5 +6,9 @@ export const shoeModelsApi = {
     createShoeModel: async (newShoeModel: CreateShoeModelRequest) => {
         const response = await api.post<StandardResponse<ShoeModel>>('/products', newShoeModel);
         return response.data.data;
+    },
+
+    deleteShoeModel: async (id: number) => {
+        await api.delete<void>(`/products/${id}`);
     }
 }
