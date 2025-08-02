@@ -5,6 +5,7 @@ import { useShoeModels } from '@hooks';
 import ModelTable from './ModelTable';
 import { ModalDialog } from '@/components/ModalDialog';
 import ModelDetailsModal from './ModelDetailsModal';
+import { SafeImage } from '@/components/SafeImage';
 
 interface InventoryShoeRowProps {
   shoe: ShoeInventoryView;
@@ -38,10 +39,13 @@ export default function InventoryShoeRow({
               {isExpanded ? '▼' : '▶'}
             </button>
             <div className="flex items-center">
-              <div className="flex-shrink-0 h-12 w-12">
-                <div className="h-12 w-12 rounded-lg bg-blue-200 flex items-center justify-center">
-                  👟
-                </div>
+              <div className="flex-shrink-0">
+                <SafeImage
+                  src={shoe.brand.logoUrl || ''}
+                  alt={`${shoe.brand.name} logo`}
+                  width={64}
+                  height={64}
+                />
               </div>
               <div className="ml-4">
                 <div className="text-lg font-bold text-gray-900">{shoe.name}</div>

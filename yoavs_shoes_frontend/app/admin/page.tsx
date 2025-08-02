@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useOrderStats } from '@hooks'
 import { useUserStats } from '@hooks';
 
-type TabType = 'overview' | 'orders' | 'users';
+type TabType = 'overview' | 'orders' | 'users' | 'inventory';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -17,6 +17,7 @@ export default function AdminDashboard() {
     { id: 'overview' as TabType, name: 'Overview', icon: '📊' },
     { id: 'orders' as TabType, name: 'Orders', icon: '📦' },
     { id: 'users' as TabType, name: 'Users', icon: '👥' },
+    { id: 'inventory' as TabType, name: 'Inventory', icon: '📋' },
   ];
 
   return (
@@ -240,6 +241,24 @@ export default function AdminDashboard() {
           </div>
           <p className="text-gray-600">
             View and manage user accounts, permissions, and activity.
+          </p>
+        </div>
+      )}
+
+      {/* Inventory Tab */}
+      {activeTab === 'inventory' && (
+        <div className="bg-white shadow rounded-lg p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-900">Inventory Management</h3>
+            <Link
+              href="/admin/inventory"
+              className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700"
+            >
+              Manage Inventory
+            </Link>
+          </div>
+          <p className="text-gray-600">
+            View and manage product inventory, stock levels, and product catalog.
           </p>
         </div>
       )}

@@ -1,10 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
-import { Heart, ShoppingCart, Eye } from 'lucide-react';
+import { Heart, Eye } from 'lucide-react';
 import { useCartActions } from '@hooks';
 import { ShoeModel } from '@/lib/types';
+import { SafeImage } from './SafeImage';
+import { ImageError } from './ImageError';
 
 interface ProductCardProps {
   product: ShoeModel;
@@ -22,7 +23,6 @@ export default function ProductCard({
   isInWishlist = false,
 }: ProductCardProps) {
   const [selectedSize, setSelectedSize] = useState<string>('');
-  const [imageError, setImageError] = useState(false);
   const cartActions = useCartActions();
 
   // Calculate stock status based on available sizes
@@ -60,25 +60,14 @@ export default function ProductCard({
     <div className="group relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden bg-gray-100">
-        {product.imageUrl && !imageError ? (
-          <Image
-            src={product.imageUrl}
-            alt={product.modelName}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={() => setImageError(true)}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-200">
-            <div className="text-gray-400 text-center">
-              <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded-full flex items-center justify-center">
-                <ShoppingCart className="w-8 h-8" />
-              </div>
-              <span className="text-sm">No Image</span>
-            </div>
-          </div>
-        )}
+        <SafeImage
+          src={product.imageUrl || ''}
+          alt={product.modelName}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          fallback={<ImageError />}
+        />
 
         {/* Overlay Actions */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-opacity-20 transition-all duration-300" />
@@ -129,7 +118,7 @@ export default function ProductCard({
         {/* Category & Color */}
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-            {product.shoe.category.name}
+            {product.shoe?.category.name}
           </span>
           <span className="text-xs text-gray-500">•</span>
           <span className="text-xs text-gray-600">{product.color}</span>
