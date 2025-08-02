@@ -3,6 +3,7 @@ import SizeManagementCard from './SizeManagementCard';
 import React from 'react';
 import { ShoeInventoryView, ShoeModelInventoryView } from '@types';
 import AddSizeModal from './AddSizeModal';
+import { ModalDialog } from '@/components/ModalDialog';
 
 interface ModelTableProps {
   models: ShoeModelInventoryView[];
@@ -124,12 +125,14 @@ export default function ModelTable({
                         )}
                       </div>
                       <div className="flex space-x-2 text-xs">
-                        <AddSizeModal
-                          trigger={<button className="text-indigo-600 hover:text-indigo-900 font-medium">+ Size</button>}
-                          selectedModel={model}
-                          selectedShoe={shoe}
-                         
-                        />
+                        <ModalDialog trigger={
+                          <button className="text-indigo-600 hover:text-indigo-900 font-medium">+ Size</button>
+                        }>
+                          <AddSizeModal
+                            selectedModel={model}
+                            selectedShoe={shoe}
+                          />
+                        </ModalDialog>
                         <button
                           onClick={() => toggleModelExpansion(model.id)}
                           className="text-gray-600 hover:text-gray-900 font-medium"

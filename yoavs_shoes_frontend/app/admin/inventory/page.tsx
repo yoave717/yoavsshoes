@@ -7,9 +7,8 @@ import AddShoeModal from '@/components/admin/inventory/AddShoeModal';
 import AddModelModal from '@/components/admin/inventory/AddModelModal';
 import InventoryTable from '@/components/admin/inventory/InventoryTable';
 import { useCreateShoe, useShoesForInventory } from '@hooks';
-import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters, Brand, Category, CreateShoeRequest, CreateShoeModelRequest, ShoeModelInventoryView} from '@types';
-import { useShoeStats } from '@/lib/hooks/shoes/useShoes';
-import { useCreateShoeModel } from '@/lib/hooks/shoes/useCreateShoeModel';
+import { ShoeInventoryView, ExtendedShoeModel, ShoeFilters, Brand, Category, CreateShoeRequest, CreateShoeModelRequest} from '@types';
+import { useShoeStats, useCreateShoeModel } from '@hooks';
 
 export default function InventoryPage() {
 
