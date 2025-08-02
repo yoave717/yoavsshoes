@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
-import { useCart } from '../lib/cart-context';
+import { useCart } from '@contexts';
 import { formatCartTotal, getCartSummary } from '@hooks';
 
 interface CartDrawerProps {

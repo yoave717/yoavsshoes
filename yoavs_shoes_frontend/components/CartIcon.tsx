@@ -1,7 +1,7 @@
 'use client';
 
 import { ShoppingCart } from 'lucide-react';
-import { useCart } from '../lib/cart-context';
+import { useCart } from '@contexts';
 
 interface CartIconProps {
   onClick?: () => void;

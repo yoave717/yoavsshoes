@@ -1,6 +1,6 @@
 import {  keepPreviousData, useMutation, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { shoeInventoryApi, shoesApi } from '@api';
-import { ShoeFilters, PageResponse, Shoe, ShoeModelInventoryView, ShoeModel, CreateShoeInventoryRequest } from '@/lib/types';
+import { ShoeFilters, PageResponse, Shoe, ShoeModelInventoryView, ShoeModel, CreateShoeInventoryRequest } from '@types';
 
 export const useShoes = (filters: ShoeFilters = {}): UseQueryResult<PageResponse<Shoe>, Error> => {
   return useQuery({

@@ -4,11 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Truck, Shield, Check, MapPin } from 'lucide-react';
 import Image from 'next/image';
-import { useCart } from '../../lib/cart-context';
+import { useCart, useUser } from '@contexts';
 import { useUserAddresses, useCreateAddress, useSetDefaultAddress, useCreateOrder, formatCartTotal, getCartSummary } from '@hooks';
 import { Address, AddressRequest, CreateOrderRequest } from '@types';
-import { convertCartItemsToOrderItems } from '../../lib/api/orders';
-import { useUser } from '@/lib/contexts/UserContext';
+import { convertCartItemsToOrderItems } from '@api';
 
 interface ShippingInfo {
   firstName: string;

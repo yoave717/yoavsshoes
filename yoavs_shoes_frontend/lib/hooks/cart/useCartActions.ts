@@ -1,7 +1,7 @@
 'use client';
 
-import { ShoeModel } from '@/lib/types';
-import { useCart } from '../../cart-context';
+import { ShoeModel } from '@types';
+import { useCart } from '@contexts';
 
 export const useCartActions = () => {
   const cart = useCart();

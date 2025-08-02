@@ -20,12 +20,11 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@api": ["./lib/api/index"],
-      "@api/*": ["./lib/api/*"],
-      "@types": ["./lib/types/index"],
-      "@types/*": ["./lib/types/*"],
+      "@api": ["./lib/api"],
+      "@types": ["./lib/types"],
       "@hooks": ["./lib/hooks"],
-      "@components/*": ["./components/*"]
+      "@contexts": ["./lib/contexts"],
+      "@components": ["./components"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
