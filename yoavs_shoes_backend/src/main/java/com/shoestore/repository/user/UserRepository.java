@@ -62,12 +62,4 @@ public interface UserRepository extends BaseRepository<User, Long> {
     @Query("UPDATE User u SET u.accountLockedUntil = :lockUntil WHERE u.id = :userId")
     void lockUserAccount(@Param("userId") Long userId, @Param("lockUntil") LocalDateTime lockUntil);
 
-    /**
-     * Get user statistics
-     */
-    @Query("SELECT " +
-            "COUNT(u) as totalUsers, " +
-            "COUNT(CASE WHEN u.isAdmin = true THEN 1 END) as adminUsers " +
-            "FROM User u")
-    Object[] getUserStatistics();
 }

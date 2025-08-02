@@ -4,11 +4,12 @@ import com.shoestore.entity.user.User;
 import com.shoestore.exception.ResourceNotFoundException;
 import com.shoestore.repository.user.UserRepository;
 import com.shoestore.service.base.BaseService;
+
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,23 +46,13 @@ public class UserService extends BaseService<User, Long, UserRepository> {
      * Get user statistics for admin dashboard
      */
     public Map<String, Object> getUserStatistics() {
-        Object[] stats = repository.getUserStatistics();
-        
+        Long totalUsers = count();
+        Long adminCount = countByIsAdmin(true);
+
         Map<String, Object> statistics = new HashMap<>();
-        if (stats != null && stats.length >= 4) {
-            // Convert BigInteger to Long for consistency
-            statistics.put("totalUsers", stats[0] instanceof BigInteger ? ((BigInteger) stats[0]).longValue() : stats[0]);
-            statistics.put("activeUsers", stats[1] instanceof BigInteger ? ((BigInteger) stats[1]).longValue() : stats[1]);
-            statistics.put("adminUsers", stats[2] instanceof BigInteger ? ((BigInteger) stats[2]).longValue() : stats[2]);
-            statistics.put("verifiedUsers", stats[3] instanceof BigInteger ? ((BigInteger) stats[3]).longValue() : stats[3]);
-        } else {
-            // Fallback values
-            statistics.put("totalUsers", 0L);
-            statistics.put("activeUsers", 0L);
-            statistics.put("adminUsers", 0L);
-            statistics.put("verifiedUsers", 0L);
-        }
-        
+        statistics.put("totalUsers", totalUsers);
+        statistics.put("adminUsers", adminCount);
+
         return statistics;
     }
 
