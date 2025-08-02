@@ -1,61 +1,71 @@
-import { ShoeInventoryView } from '@/lib/types';
-import { ExtendedShoeModel } from '@/lib/types/product';
+import { ShoeInventoryView, ExtendedShoeModel } from '@types';
+import { useModal } from '@contexts';
+import { useCreateShoeModel } from '@hooks';
 
 interface AddModelModalProps {
-  isOpen: boolean;
-  editingModel: ExtendedShoeModel | null;
-  selectedShoe: ShoeInventoryView | null;
+  selectedShoe?: ShoeInventoryView;
   shoes: ShoeInventoryView[];
-  onClose: () => void;
-  onSelectShoe: (shoe: ShoeInventoryView | null) => void;
-  onSave: (modelData: any) => void;
 }
 
-export default function AddModelModal({
-  isOpen,
-  editingModel,
-  selectedShoe,
-  shoes,
-  onClose,
-  onSelectShoe,
-  onSave
-}: AddModelModalProps) {
-  if (!isOpen) return null;
+interface EditModalProps {
+  editingModel: ExtendedShoeModel;
+  selectedShoe: ShoeInventoryView;
+}
 
+type ModelDetailsModalProps = EditModalProps | AddModelModalProps;
+
+function isEditMode(
+  props: ModelDetailsModalProps
+): props is EditModalProps {
+  return 'editingModel' in props;
+}
+
+export default function ModelDetailsModal(props: ModelDetailsModalProps ) {
+  const { onClose } = useModal();
+  const { mutate: createShoeModel } = useCreateShoeModel();
+
+  const isEdit = isEditMode(props);
+  const editingModel = isEdit ? props.editingModel : undefined;
+  const selectedShoe = isEdit ? props.selectedShoe : props.selectedShoe;
+  const shoes = isEdit ? [] : props.shoes;
+
+  
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!selectedShoe && !editingModel) {
+      alert('Please select a shoe');
+      return;
+    }
+    
     const formData = new FormData(e.target as HTMLFormElement);
     const modelData = {
-      shoeId: selectedShoe?.id,
-      modelName: formData.get('modelName'),
-      color: formData.get('color'),
-      material: formData.get('material'),
-      sku: formData.get('sku'),
-      price: formData.get('price'),
-      imageUrl: formData.get('imageUrl'),
+      shoeId: isEdit ? props.editingModel.shoeId : selectedShoe!.id,
+      modelName: formData.get('modelName') as string,
+      color: formData.get('color') as string,
+      material: formData.get('material') as string,
+      sku: formData.get('sku') as string,
+      price: parseFloat(formData.get('price') as string),
+      imageUrl: formData.get('imageUrl') as string,
       isActive: formData.get('isActive') === 'on'
     };
-    onSave(modelData);
+
+    createShoeModel(modelData);
   };
 
   return (
-  <div className="fixed inset-0 bg-gray-600/60 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          {editingModel ? 'Edit Shoe Model' : 'Add New Shoe Model'}
+          {isEdit ? 'Edit Shoe Model' : 'Add New Shoe Model'}
         </h3>
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          {!editingModel && (
+          {!isEdit && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Select Shoe</label>
               <select
                 name="shoeId"
                 value={selectedShoe?.id || ''}
-                onChange={(e) => {
-                  const shoe = shoes.find(s => s.id === parseInt(e.target.value));
-                  onSelectShoe(shoe || null);
-                }}
                 required
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
@@ -171,6 +181,5 @@ export default function AddModelModal({
           </div>
         </form>
       </div>
-    </div>
   );
 }

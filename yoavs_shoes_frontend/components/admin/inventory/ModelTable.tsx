@@ -4,12 +4,12 @@ import React from 'react';
 import { ShoeInventoryView, ShoeModelInventoryView } from '@types';
 import AddSizeModal from './AddSizeModal';
 import { ModalDialog } from '@/components/ModalDialog';
+import ModelDetailsModal from './ModelDetailsModal';
 
 interface ModelTableProps {
   models: ShoeModelInventoryView[];
   shoe: ShoeInventoryView;
   onStockUpdate: (modelId: number, size: string, newQuantity: number) => void;
-  onEditModel: (model: ShoeModelInventoryView) => void;
   onDeleteModel: (modelId: number) => void;
 }
 
@@ -17,7 +17,6 @@ export default function ModelTable({
   models,
   shoe,
   onStockUpdate,
-  onEditModel,
   onDeleteModel,
 }: ModelTableProps) {
   const [expandedModels, setExpandedModels] = useState<Set<number>>(new Set());
@@ -151,12 +150,16 @@ export default function ModelTable({
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-1">
-                    <button
-                      onClick={() => onEditModel(model)}
-                      className="text-indigo-600 hover:text-indigo-900 text-xs"
-                    >
-                      Edit
-                    </button>
+                    <ModalDialog trigger={
+                      <button className="text-indigo-600 hover:text-indigo-900 text-xs">
+                        Edit
+                      </button>
+                    }>
+                      <ModelDetailsModal
+                        selectedShoe={shoe}
+                        editingModel={model}
+                      />
+                    </ModalDialog>
                     <button
                       onClick={() => onDeleteModel(model.id)}
                       className="text-red-600 hover:text-red-900 text-xs"

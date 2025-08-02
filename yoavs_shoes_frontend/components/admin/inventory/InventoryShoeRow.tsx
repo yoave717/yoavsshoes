@@ -1,24 +1,21 @@
 import { useState } from 'react';
-import { ExtendedShoeModel } from '@/lib/types/product';
 import React from 'react';
 import { ShoeInventoryView } from '@/lib/types';
 import { useShoeModels } from '@/lib/hooks/shoes/useShoes';
 import ModelTable from './ModelTable';
+import { ModalDialog } from '@/components/ModalDialog';
+import ModelDetailsModal from './ModelDetailsModal';
 
 interface InventoryShoeRowProps {
   shoe: ShoeInventoryView;
   onStockUpdate: (modelId: number, size: string, newQuantity: number) => void;
-  onEditModel: (model: ExtendedShoeModel) => void;
   onDeleteModel: (modelId: number) => void;
-  onAddModel: (shoe: ShoeInventoryView) => void;
 }
 
 export default function InventoryShoeRow({
   shoe,
   onStockUpdate,
-  onEditModel,
   onDeleteModel,
-  onAddModel
 }: InventoryShoeRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -72,12 +69,17 @@ export default function InventoryShoeRow({
           </span>
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+          <ModalDialog trigger={
           <button
-            onClick={() => onAddModel(shoe)}
             className="text-blue-600 hover:text-blue-900"
           >
             + Add Model
-          </button>
+          </button>}>
+            <ModelDetailsModal
+              selectedShoe={shoe}
+              shoes={[shoe]}
+            />
+          </ModalDialog>
         </td>
       </tr>
 
@@ -92,7 +94,6 @@ export default function InventoryShoeRow({
                   models={models}
                   shoe={shoe}
                   onStockUpdate={onStockUpdate}
-                  onEditModel={onEditModel}
                   onDeleteModel={onDeleteModel}
                 />
               ) : 

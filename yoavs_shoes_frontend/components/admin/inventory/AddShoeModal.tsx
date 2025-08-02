@@ -1,20 +1,13 @@
-import { useBrands, useCategories } from "@/lib/hooks";
-import { CreateShoeRequest } from "@/lib/types";
+import { useModal } from "@contexts";
+import { useBrands, useCategories, useCreateShoe } from "@hooks";
+import { CreateShoeRequest } from "@types";
 
-
-
-interface AddShoeModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddShoe: (shoeData: CreateShoeRequest) => void;
-}
-
-export default function AddShoeModal({ isOpen, onClose, onAddShoe }: AddShoeModalProps) {
+export default function AddShoeModal() {
   const { data: brands, isLoading: isBrandsLoading } = useBrands();
   const { data: categories, isLoading: isCategoriesLoading } = useCategories();
+  const { mutate: createShoe } = useCreateShoe();
+  const { onClose } = useModal();
   
-  if (!isOpen) return null;
-
   if (isBrandsLoading || isCategoriesLoading) {
     return <div>Loading...</div>;
   }
@@ -31,11 +24,15 @@ export default function AddShoeModal({ isOpen, onClose, onAddShoe }: AddShoeModa
       categoryId: parseInt(formData.get('categoryId') as string),
       isActive: true
     };
-    onAddShoe(shoeData);
+
+    createShoe(shoeData,{
+      onSettled: () => {
+        onClose();
+      },
+    });
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600/60  flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
           Add New Shoe
@@ -138,6 +135,5 @@ export default function AddShoeModal({ isOpen, onClose, onAddShoe }: AddShoeModa
           </div>
         </form>
       </div>
-    </div>
   );
 }
