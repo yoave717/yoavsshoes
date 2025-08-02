@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import InventoryPage from './inventory/page';
-import AdminUsersPage from './users/page';
-import AdminOrdersPage from './orders/page';
-import OverviewTab from './components/OverviewTab';
+import { useState, lazy, Suspense } from 'react';
+
+// Lazy load the components
+const InventoryPage = lazy(() => import('./inventory/page'));
+const AdminUsersPage = lazy(() => import('./users/page'));
+const AdminOrdersPage = lazy(() => import('./orders/page'));
+const OverviewTab = lazy(() => import('../../components/admin/OverviewTab'));
 
 type TabType = 'overview' | 'orders' | 'users' | 'inventory';
 
@@ -18,6 +20,14 @@ export default function AdminDashboard() {
     { id: 'inventory' as TabType, name: 'Inventory', icon: '📋' },
   ];
 
+  // Loading component for Suspense fallback
+  const LoadingSpinner = () => (
+    <div className="flex items-center justify-center py-12">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <span className="ml-2 text-gray-600">Loading...</span>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       {/* Tab Navigation */}
@@ -27,7 +37,7 @@ export default function AdminDashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 border-b-2 px-1 py-2 text-sm font-medium whitespace-nowrap ${
+              className={`flex items-center space-x-2 border-b-2 px-1 py-2 text-sm font-medium whitespace-nowrap  ${
                 activeTab === tab.id
                   ? 'border-indigo-500 text-indigo-600'
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
@@ -41,17 +51,32 @@ export default function AdminDashboard() {
       </div>
 
       {/* Overview Tab */}
-      {activeTab === 'overview' && <OverviewTab />}
+      {activeTab === 'overview' && (
+        <Suspense fallback={<LoadingSpinner />}>
+          <OverviewTab />
+        </Suspense>
+      )}
 
       {/* Orders Tab */}
-      {activeTab === 'orders' && <AdminOrdersPage />}
+      {activeTab === 'orders' && (
+        <Suspense fallback={<LoadingSpinner />}>
+          <AdminOrdersPage />
+        </Suspense>
+      )}
 
       {/* Users Tab */}
-      {activeTab === 'users' && <AdminUsersPage />}
+      {activeTab === 'users' && (
+        <Suspense fallback={<LoadingSpinner />}>
+          <AdminUsersPage />
+        </Suspense>
+      )}
 
       {/* Inventory Tab */}
-      {activeTab === 'inventory' && <InventoryPage />}
+      {activeTab === 'inventory' && (
+        <Suspense fallback={<LoadingSpinner />}>
+          <InventoryPage />
+        </Suspense>
+      )}
     </div>
   );
 }
-                   
