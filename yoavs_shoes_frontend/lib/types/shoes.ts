@@ -65,7 +65,7 @@ export interface ShoeModel extends BaseType {
   isActive?: boolean;
   displayName: string;
   fullDisplayName: string;
-  shoe?: Shoe;
+  shoe: Shoe;
   availableSizes: ShoeInventory[];
 }
 
