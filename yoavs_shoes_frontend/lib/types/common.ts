@@ -33,11 +33,13 @@ export interface PageData<T> {
   numberOfElements: number;
 }
 
+export type SortDirection = 'asc' | 'desc';
+
 export interface PageFilter {
   page?: number;
   size?: number;
   sortBy?: string;
-  sortDirection?: 'asc' | 'desc';
+  sortDirection?: SortDirection;
 }
 
 export interface BaseType {

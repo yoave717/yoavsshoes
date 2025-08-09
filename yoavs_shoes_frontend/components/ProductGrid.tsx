@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Grid, List, ArrowUpDown } from 'lucide-react';
 import ProductCard from './ProductCard';
-import { ShoeModel } from '@/lib/types';
+import { ShoeModel, SortDirection } from '@/lib/types';
 
 interface ProductGridProps {
   products: ShoeModel[];
@@ -17,17 +17,17 @@ interface ProductGridProps {
   totalPages: number;
   pageSize: number;
   onPageChange: (page: number) => void;
-  onSortChange: (sortBy: string, sortDirection: string) => void;
-  currentSort: { sortBy: string; sortDirection: string };
+  onSortChange: (sortBy: string, sortDirection: SortDirection) => void;
+  currentSort: { sortBy: string; sortDirection: SortDirection };
 }
 
-const SORT_OPTIONS = [
-  { value: 'createdAt_DESC', label: 'Newest First', sortBy: 'createdAt', sortDirection: 'DESC' },
-  { value: 'createdAt_ASC', label: 'Oldest First', sortBy: 'createdAt', sortDirection: 'ASC' },
-  { value: 'price_ASC', label: 'Price: Low to High', sortBy: 'price', sortDirection: 'ASC' },
-  { value: 'price_DESC', label: 'Price: High to Low', sortBy: 'price', sortDirection: 'DESC' },
-  { value: 'name_ASC', label: 'Name: A to Z', sortBy: 'name', sortDirection: 'ASC' },
-  { value: 'name_DESC', label: 'Name: Z to A', sortBy: 'name', sortDirection: 'DESC' },
+const SORT_OPTIONS: { value: string; label: string; sortBy: string; sortDirection: SortDirection }[] = [
+  { value: 'createdAt_DESC', label: 'Newest First', sortBy: 'createdAt', sortDirection: 'desc' },
+  { value: 'createdAt_ASC', label: 'Oldest First', sortBy: 'createdAt', sortDirection: 'asc' },
+  { value: 'price_ASC', label: 'Price: Low to High', sortBy: 'price', sortDirection: 'asc' },
+  { value: 'price_DESC', label: 'Price: High to Low', sortBy: 'price', sortDirection: 'desc' },
+  { value: 'name_ASC', label: 'Name: A to Z', sortBy: 'name', sortDirection: 'asc' },
+  { value: 'name_DESC', label: 'Name: Z to A', sortBy: 'name', sortDirection: 'desc' },
 ];
 
 export default function ProductGrid({

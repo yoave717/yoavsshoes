@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useProducts, useAvailableFilters, useCartActions } from '@hooks';
 import ProductGrid from '../../components/ProductGrid';
 import ProductFilters, { FilterState } from '../../components/ProductFilters';
-import { ShoeModel } from '@/lib/types';
+import { ShoeModel, SortDirection } from '@/lib/types';
 
 export default function ProductListingPage() {
   const [filters, setFilters] = useState<FilterState>({
@@ -20,7 +20,7 @@ export default function ProductListingPage() {
 
   const [page, setPage] = useState(0);
   const [sortBy, setSortBy] = useState('createdAt');
-  const [sortDirection, setSortDirection] = useState('DESC');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [wishlistItems, setWishlistItems] = useState<number[]>([]);
 
   // Get cart actions
@@ -59,7 +59,7 @@ export default function ProductListingPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSortChange = (newSortBy: string, newSortDirection: string) => {
+  const handleSortChange = (newSortBy: string, newSortDirection: SortDirection) => {
     setSortBy(newSortBy);
     setSortDirection(newSortDirection);
     setPage(0); // Reset to first page when sorting changes
