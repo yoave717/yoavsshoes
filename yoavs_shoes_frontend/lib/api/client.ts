@@ -7,6 +7,9 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  paramsSerializer: {
+    indexes: null, // Prevents array indexes in query params
+  }
 });
 
 // Request interceptor to add auth token

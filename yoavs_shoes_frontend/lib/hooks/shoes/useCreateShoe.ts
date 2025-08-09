@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { shoesApi } from '@api';
-import { CreateShoeRequest, Shoe } from '@types';
+import { CreateShoeRequest } from '@types';
 
 export const useCreateShoe = () => {
   const queryClient = useQueryClient();

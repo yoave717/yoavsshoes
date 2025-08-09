@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useToast } from '@/components/Toast';
 import { shoeInventoryApi } from '@api';
 import { useQueryClient, useMutation } from '@tanstack/react-query';

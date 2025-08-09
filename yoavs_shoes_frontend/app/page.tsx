@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useProfile, useLogout } from '../lib/hooks';
+import { useLogout } from '../lib/hooks';
 import { useUser } from '@/lib/contexts/UserContext';
 
 export default function Home() {
-  const { user, isLoading } = useUser();
+  const { user } = useUser();
   const logoutMutation = useLogout();
 
   const handleLogout = async () => {

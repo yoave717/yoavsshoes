@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { shoeModelsApi } from '../../api/shoeModels';
 import { ShoeModel } from '@/lib/types';
@@ -12,14 +13,6 @@ export const useDeleteShoeModel = () => {
         onSuccess: (data, variables) => {
             queryClient.setQueryData(['shoe-models', variables.shoeId], (old: ShoeModel[]) => {
                 return old?.filter(model => model.id !== variables.shoeModelId);
-            });
-            queryClient.setQueryData(['shoes', 'inventory'], (old: any[]) => {
-                return old?.map(shoe => {
-                    if (shoe.id === variables.shoeId) {
-                        return { ...shoe, modelCount: (shoe.modelCount || 0) - 1 };
-                    }
-                    return shoe;
-                });
             });
             showToast('Shoe model deleted successfully', 'success');
 

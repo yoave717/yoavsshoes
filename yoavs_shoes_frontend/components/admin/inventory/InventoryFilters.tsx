@@ -23,9 +23,9 @@ export default function InventoryFilters({
   onClearFilters
 }: InventoryFiltersProps) {
 
-  const { data: brands, isLoading: isBrandsLoading } = useBrands();
+  const { data: brands } = useBrands();
 
-  const { data: categories, isLoading: isCategoriesLoading } = useCategories();
+  const { data: categories } = useCategories();
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
