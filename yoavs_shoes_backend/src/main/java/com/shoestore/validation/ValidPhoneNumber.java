@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = {})
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Pattern(regexp = "^[\\+]?[1-9]\\d{1,14}$", 
+@Pattern(regexp = "^(\\+\\d{1,2}\\s?)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$", 
          message = "Phone number must be a valid international format (10-15 digits, optional +)")
 public @interface ValidPhoneNumber {
     String message() default "Phone number must be a valid international format";
